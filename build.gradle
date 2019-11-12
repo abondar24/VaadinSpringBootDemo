@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+    id "jacoco"
+    id "org.springframework.boot" version "2.2.0.RELEASE"
+
+}
+apply plugin: 'application'
+apply plugin: 'io.spring.dependency-management'
+
+group 'org.abondar.experimental'
+version '1.0-SNAPSHOT'
+mainClassName = 'org.abondar.experimental.vsb.VaadinSpringBootDemoApplication'
+
+sourceCompatibility = 11
+
+
+bootJar {
+    archivesBaseName = 'vaadin-springboot-demo'
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'com.vaadin:vaadin-bom:14.0.12'
+    }
+}
+
+dependencies {
+
+    implementation "org.slf4j:slf4j-api:$slf4jVersion"
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "com.vaadin:vaadin-spring-boot-starter:$vaadinVersion"
+  
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
+}
