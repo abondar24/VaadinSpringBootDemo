@@ -12,10 +12,11 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.server.PWA;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.material.Material;
 
 @Route("")
-@PWA(name = "Vaadin Spring Boot Demo", shortName = "Vaadin Spring Boot")
+@Theme(value = Material.class, variant = Material.LIGHT)
 public class MainView extends AppLayout {
 
     public MainView() {

@@ -13,7 +13,6 @@ mainClassName = 'org.abondar.experimental.vsb.VaadinSpringBootDemoApplication'
 
 sourceCompatibility = 11
 
-
 bootJar {
     archivesBaseName = 'vaadin-springboot-demo'
 }
