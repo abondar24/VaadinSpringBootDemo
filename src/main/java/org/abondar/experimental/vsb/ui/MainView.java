@@ -1,5 +1,6 @@
 package org.abondar.experimental.vsb.ui;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
@@ -10,6 +11,7 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 
 @Route("")
@@ -38,8 +40,13 @@ public class MainView extends AppLayout {
 
         var progressBar = new ProgressBar(0.1,1.0,0.777);
 
-        addToDrawer(button);
+        var gridLink = new RouterLink("Grid view",GridView.class);
 
+        var bindBtn = new Button("Bind view",event->{
+            UI.getCurrent().navigate(BindView.class);
+        });
+
+        addToDrawer(button);
 
         var horizontalLayout = new HorizontalLayout();
 
@@ -49,8 +56,11 @@ public class MainView extends AppLayout {
         horizontalLayout.add(greeting);
         addToDrawer(priceField);
         addToDrawer(progressBar);
+        addToDrawer(gridLink);
+        addToDrawer(bindBtn);
 
         addToNavbar(new Span("Vaadin 14 Demo"));
+
 
     }
 }

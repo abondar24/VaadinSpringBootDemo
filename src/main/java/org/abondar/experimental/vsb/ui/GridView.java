@@ -1,5 +1,6 @@
 package org.abondar.experimental.vsb.ui;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -50,7 +51,10 @@ public class GridView extends VerticalLayout {
         MultiSelect<Grid<Person>, Person> multiSelect = grid.asMultiSelect();
         multiSelect.addSelectionListener(e->e.getValue().forEach(p->System.out.println(p.getUuid())));
 
-        grid.addItemClickListener(e->System.out.println(e.getItem().getName()));
+        grid.addItemClickListener(e->{
+            System.out.println(e.getItem().getName());
+            UI.getCurrent().navigate(DynamicRouteView.class,e.getItem().getName());
+        });
 
         Grid.Column<Person> custom = grid.addColumn(Person::isActive)
                 .setHeader("Active")
