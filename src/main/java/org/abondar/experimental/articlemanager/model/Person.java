@@ -1,4 +1,4 @@
-package org.abondar.experimental.vsb.model;
+package org.abondar.experimental.articlemanager.model;
 
 import java.util.UUID;
 

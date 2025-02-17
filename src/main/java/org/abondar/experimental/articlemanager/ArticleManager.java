@@ -1,4 +1,4 @@
-package org.abondar.experimental.vsb;
+package org.abondar.experimental.articlemanager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
