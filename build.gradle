@@ -26,6 +26,9 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-data-neo4j"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation("software.amazon.awssdk:s3:$awsVersion")
     implementation "com.vaadin:vaadin-spring-boot-starter:$vaadinVersion"
   
 
