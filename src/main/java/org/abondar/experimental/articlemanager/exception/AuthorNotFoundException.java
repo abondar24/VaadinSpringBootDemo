@@ -1,0 +1,7 @@
+package org.abondar.experimental.articlemanager.exception;
+
+public class AuthorNotFoundException extends RuntimeException {
+    public AuthorNotFoundException(String message) {
+        super(message);
+    }
+}
