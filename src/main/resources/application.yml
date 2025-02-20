@@ -1,2 +1,17 @@
 server:
   port: 9080
+
+spring:
+  neo4j:
+    uri: bolt://localhost:7687
+    authentication:
+      username: neo4j
+      password: neo4j
+
+
+aws:
+ endpoint: http://localhost:4566
+ username: test
+ password: test
+ region:  us-east-1
+ s3-bucket: articles
