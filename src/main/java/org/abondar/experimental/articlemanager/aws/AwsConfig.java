@@ -24,9 +24,9 @@ public class AwsConfig {
                 .region(Region.of(awsProperties.getRegion()));
 
         if (awsProperties.isLocal()) {
-            s3client.endpointOverride(URI.create(awsProperties.getEndpoint()))
+            s3client.endpointOverride(URI.create(awsProperties.getLocalStack().getEndpoint()))
                     .credentialsProvider(StaticCredentialsProvider.create(
-                            AwsBasicCredentials.create(awsProperties.getUsername(), awsProperties.getPassword())
+                            AwsBasicCredentials.create(awsProperties.getLocalStack().getUsername(), awsProperties.getLocalStack().getPassword())
                     ));
         } else {
             s3client.credentialsProvider(DefaultCredentialsProvider.create());
