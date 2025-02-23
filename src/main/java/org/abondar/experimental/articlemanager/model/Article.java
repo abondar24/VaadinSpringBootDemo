@@ -9,7 +9,7 @@ public record Article(
 
         @Id String id,
 
-        String title, String fileUrl,
+        String title, String articleKey,
 
         @Relationship(type = "AUTHOR") Author author,
 
