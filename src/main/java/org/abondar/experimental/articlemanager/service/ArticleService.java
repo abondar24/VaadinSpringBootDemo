@@ -37,18 +37,18 @@ public class ArticleService {
 
         var article = new Article(id, title, articleKey, author, getCoAuthors(coAuthorsIds));
 
-        articleRepository.save(article);
         fileUploadService.uploadFile(articleKey, file);
-
-        return article;
+        return articleRepository.save(article);
     }
 
     public void setCoAuthors(List<String> coAuthorsIds, String articleId) throws Exception {
         var article = getArticle(articleId);
 
         var coAuthors = getCoAuthors(coAuthorsIds);
-        article.coAuthors().addAll(coAuthors);
-        articleRepository.save(article);
+        if (!coAuthors.isEmpty()) {
+            article.coAuthors().addAll(coAuthors);
+            articleRepository.save(article);
+        }
     }
 
     public List<Article> getArticlesByAuthor(String authorId) {

@@ -32,10 +32,8 @@ public class AuthorService {
     }
 
     public void connectAuthors(String author1Id, String author2Id) {
-        var author1 = authorRepository.findById(author1Id)
-                .orElseThrow(() -> new AuthorNotFoundException("Author not found"));
-        var author2 = authorRepository.findById(author2Id)
-                .orElseThrow(() -> new AuthorNotFoundException("Author not found"));
+        var author1 = getAuthorById(author1Id);
+        var author2 = getAuthorById(author2Id);
 
         var updatedAuthor1 = new Author(author1.id(), author1.name(), author1.lastName(),
                 author1.email(), author1.articles(), mergeConnections(author1, author2));
@@ -49,6 +47,8 @@ public class AuthorService {
     }
 
     public Author updateAuthor(Author author) {
+        getAuthorById(author.id());
+
         return authorRepository.save(author);
     }
 
@@ -57,9 +57,7 @@ public class AuthorService {
     }
 
     public void deleteAuthor(String id) {
-        if (authorRepository.existsById(id)) {
-            throw new AuthorNotFoundException("Author not found");
-        }
+        getAuthorById(id);
 
         articleRepository.removeMainAuthor(id);
         articleRepository.removeCoAuthor(id);
@@ -75,6 +73,11 @@ public class AuthorService {
             }
         };
 
+    }
+
+    private Author getAuthorById(String id) {
+        return authorRepository.findById(id)
+                .orElseThrow(() -> new AuthorNotFoundException("Author not found"));
     }
 
 
