@@ -10,8 +10,10 @@ spring:
 
 
 aws:
- endpoint: http://localhost:4566
- username: test
- password: test
+ local: true
+ localstack:
+   endpoint: http://localhost:4566
+   username: test
+   password: test
  region:  us-east-1
  s3-bucket: articles

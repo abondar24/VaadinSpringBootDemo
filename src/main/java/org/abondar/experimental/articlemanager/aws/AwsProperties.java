@@ -12,9 +12,16 @@ import org.springframework.stereotype.Component;
 @Setter
 public class AwsProperties {
 
-    private String endpoint;
-    private String username;
-    private String password;
+    private LocalStackConfig localStack = new LocalStackConfig();
     private String region;
     private String s3Bucket;
+    private boolean isLocal;
+
+    @Getter
+    @Setter
+    public static class LocalStackConfig {
+        private String endpoint;
+        private String username;
+        private String password;
+    }
 }
