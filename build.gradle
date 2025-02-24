@@ -28,13 +28,25 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-data-neo4j"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation("software.amazon.awssdk:s3:$awsVersion")
+    implementation "software.amazon.awssdk:s3:$awsVersion"
     implementation "com.vaadin:vaadin-spring-boot-starter:$vaadinVersion"
   
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.testcontainers:junit-jupiter:$testConVersion"
+    testImplementation "org.testcontainers:localstack:$testConVersion"
+    testImplementation "io.projectreactor:reactor-test"
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform(){
+        excludeTags "integration"
+    }
+}
+
+
+def integrationTest = tasks.register("integrationTest",Test){
+    useJUnitPlatform{
+        includeTags "integration"
+    }
 }

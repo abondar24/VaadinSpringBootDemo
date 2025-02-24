@@ -27,7 +27,8 @@ public class AwsConfig {
             s3client.endpointOverride(URI.create(awsProperties.getLocalStack().getEndpoint()))
                     .credentialsProvider(StaticCredentialsProvider.create(
                             AwsBasicCredentials.create(awsProperties.getLocalStack().getUsername(), awsProperties.getLocalStack().getPassword())
-                    ));
+                    ))
+                    .forcePathStyle(true);
         } else {
             s3client.credentialsProvider(DefaultCredentialsProvider.create());
         }
