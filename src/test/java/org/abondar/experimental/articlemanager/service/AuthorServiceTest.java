@@ -54,14 +54,13 @@ public class AuthorServiceTest {
 
         when(authorRepository.findById(author1.id())).thenReturn(Optional.of(author1));
         when(authorRepository.findById(author2.id())).thenReturn(Optional.of(author2));
+        doNothing().when(authorRepository).createConnection(author1.id(), author2.id());
 
-        when(authorRepository.save(any(Author.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        authorService.connectAuthors(author1.id(), author2.id());
 
-        authorService.connectAuthors(author1.id(),author2.id());
-
-        verify(authorRepository,times(1)).findById(author1.id());
-        verify(authorRepository,times(1)).findById(author2.id());
-        verify(authorRepository,times(2)).save(any(Author.class));
+        verify(authorRepository, times(1)).findById(author1.id());
+        verify(authorRepository, times(1)).findById(author2.id());
+        verify(authorRepository, times(1)).createConnection(author1.id(), author2.id());
     }
 
     @Test
@@ -70,7 +69,7 @@ public class AuthorServiceTest {
 
         when(authorRepository.findById(author1.id())).thenReturn(Optional.empty());
 
-        assertThrows(AuthorNotFoundException.class, () -> authorService.connectAuthors(author1.id(),author1.id()));
+        assertThrows(AuthorNotFoundException.class, () -> authorService.connectAuthors(author1.id(), author1.id()));
     }
 
     @Test
@@ -81,7 +80,7 @@ public class AuthorServiceTest {
 
         var res = authorService.findConnectionsById(author.id());
 
-        assertEquals(1,res.size());
+        assertEquals(1, res.size());
     }
 
     @Test
@@ -91,10 +90,28 @@ public class AuthorServiceTest {
 
         authorService.deleteAuthor(author.id());
 
-        verify(articleRepository,times(1)).removeMainAuthor(author.id());
-        verify(articleRepository,times(1)).removeCoAuthor(author.id());
-        verify(authorRepository,times(1)).findById(author.id());
-        verify(authorRepository,times(1)).deleteById(author.id());
+        verify(articleRepository, times(1)).removeMainAuthor(author.id());
+        verify(articleRepository, times(1)).removeCoAuthor(author.id());
+        verify(authorRepository, times(1)).findById(author.id());
+        verify(authorRepository, times(1)).deleteById(author.id());
+    }
+
+    @Test
+    void getUserByIdTest() {
+        var author1 = new Author("testId1", "test", "test", "test", List.of(), List.of());
+
+        when(authorRepository.findById(author1.id())).thenReturn(Optional.of(author1));
+
+        var res = authorService.getAuthorById(author1.id());
+        assertEquals(author1, res);
+    }
+
+    @Test
+    void getUserByIdTNotFoundest() {
+
+        when(authorRepository.findById("test")).thenReturn(Optional.empty());
+
+        assertThrows(AuthorNotFoundException.class, () -> authorService.getAuthorById("test"));
     }
 
 }

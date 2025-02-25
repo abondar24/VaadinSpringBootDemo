@@ -9,9 +9,7 @@ import org.abondar.experimental.articlemanager.repository.ArticleRepository;
 import org.abondar.experimental.articlemanager.repository.AuthorRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -32,18 +30,10 @@ public class AuthorService {
     }
 
     public void connectAuthors(String author1Id, String author2Id) {
-        var author1 = getAuthorById(author1Id);
-        var author2 = getAuthorById(author2Id);
+       getAuthorById(author1Id);
+       getAuthorById(author2Id);
 
-        var updatedAuthor1 = new Author(author1.id(), author1.name(), author1.lastName(),
-                author1.email(), author1.articles(), mergeConnections(author1, author2));
-
-        var updatedAuthor2 = new Author(author2.id(), author2.name(), author2.lastName(),
-                author2.email(), author2.articles(), mergeConnections(author2, author1));
-
-        authorRepository.save(updatedAuthor1);
-        authorRepository.save(updatedAuthor2);
-
+       authorRepository.createConnection(author1Id,author2Id);
     }
 
     public Author updateAuthor(Author author) {
@@ -66,16 +56,7 @@ public class AuthorService {
         authorRepository.deleteById(id);
     }
 
-    private List<Author> mergeConnections(Author author1, Author author2) {
-        return new ArrayList<>(author1.connections()) {
-            {
-                add(author2);
-            }
-        };
-
-    }
-
-    private Author getAuthorById(String id) {
+    public Author getAuthorById(String id) {
         return authorRepository.findById(id)
                 .orElseThrow(() -> new AuthorNotFoundException("Author not found"));
     }

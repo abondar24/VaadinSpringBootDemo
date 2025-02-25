@@ -35,7 +35,8 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.testcontainers:junit-jupiter:$testConVersion"
     testImplementation "org.testcontainers:localstack:$testConVersion"
-    testImplementation "io.projectreactor:reactor-test"
+    testImplementation "org.testcontainers:neo4j:$testConVersion"
+
 }
 
 test {
