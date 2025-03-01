@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,73 +37,73 @@ public class AuthorServiceTest {
         var firstName = "John";
         var lastName = "Doe";
         var email = "john.doe@gmail.com";
-        var mockAuthor = new Author("mockId", firstName, lastName, email, List.of(), List.of());
+        var mockAuthor = new Author("mockId", firstName, lastName, email, Set.of(), Set.of());
 
         when(authorRepository.save(any(Author.class))).thenReturn(mockAuthor);
 
         var res = authorService.save(firstName, lastName, email);
-        assertNotNull(res.id());
-        assertEquals(firstName, res.name());
+        assertNotNull(res.getId());
+        assertEquals(firstName, res.getName());
 
     }
 
 
     @Test
     void updateConnectionsTest() {
-        var author1 = new Author("testId1", "test", "test", "test", List.of(), List.of());
-        var author2 = new Author("testId2", "test", "test", "test", List.of(), List.of());
+        var author1 = new Author("testId1", "test", "test", "test", Set.of(), Set.of());
+        var author2 = new Author("testId2", "test", "test", "test", Set.of(), Set.of());
 
-        when(authorRepository.findById(author1.id())).thenReturn(Optional.of(author1));
-        when(authorRepository.findById(author2.id())).thenReturn(Optional.of(author2));
-        doNothing().when(authorRepository).createConnection(author1.id(), author2.id());
+        when(authorRepository.findById(author1.getId())).thenReturn(Optional.of(author1));
+        when(authorRepository.findById(author2.getId())).thenReturn(Optional.of(author2));
+        doNothing().when(authorRepository).createConnection(author1.getId(), author2.getId());
 
-        authorService.connectAuthors(author1.id(), author2.id());
+        authorService.connectAuthors(author1.getId(), author2.getId());
 
-        verify(authorRepository, times(1)).findById(author1.id());
-        verify(authorRepository, times(1)).findById(author2.id());
-        verify(authorRepository, times(1)).createConnection(author1.id(), author2.id());
+        verify(authorRepository, times(1)).findById(author1.getId());
+        verify(authorRepository, times(1)).findById(author2.getId());
+        verify(authorRepository, times(1)).createConnection(author1.getId(), author2.getId());
     }
 
     @Test
     void updateConnectionsAuthorNotFoundTest() {
-        var author1 = new Author("testId1", "test", "test", "test", List.of(), List.of());
+        var author1 = new Author("testId1", "test", "test", "test", Set.of(), Set.of());
 
-        when(authorRepository.findById(author1.id())).thenReturn(Optional.empty());
+        when(authorRepository.findById(author1.getId())).thenReturn(Optional.empty());
 
-        assertThrows(AuthorNotFoundException.class, () -> authorService.connectAuthors(author1.id(), author1.id()));
+        assertThrows(AuthorNotFoundException.class, () -> authorService.connectAuthors(author1.getId(), author1.getId()));
     }
 
     @Test
     void findConnectionsTest() {
-        var author = new Author("testId1", "test", "test", "test", List.of(), List.of());
+        var author = new Author("testId1", "test", "test", "test", Set.of(), Set.of());
 
-        when(authorRepository.findConnectionsById(author.id())).thenReturn(List.of(author));
+        when(authorRepository.findConnectionsById(author.getId())).thenReturn(List.of(author));
 
-        var res = authorService.findConnectionsById(author.id());
+        var res = authorService.findConnectionsById(author.getId());
 
         assertEquals(1, res.size());
     }
 
     @Test
     void deleteAuthorTest() {
-        var author = new Author("testId1", "test", "test", "test", List.of(), List.of());
-        when(authorRepository.findById(author.id())).thenReturn(Optional.of(author));
+        var author = new Author("testId1", "test", "test", "test", Set.of(), Set.of());
+        when(authorRepository.findById(author.getId())).thenReturn(Optional.of(author));
 
-        authorService.deleteAuthor(author.id());
+        authorService.deleteAuthor(author.getId());
 
-        verify(articleRepository, times(1)).removeMainAuthor(author.id());
-        verify(articleRepository, times(1)).removeCoAuthor(author.id());
-        verify(authorRepository, times(1)).findById(author.id());
-        verify(authorRepository, times(1)).deleteById(author.id());
+        verify(articleRepository, times(1)).removeMainAuthor(author.getId());
+        verify(articleRepository, times(1)).removeCoAuthor(author.getId());
+        verify(authorRepository, times(1)).findById(author.getId());
+        verify(authorRepository, times(1)).deleteById(author.getId());
     }
 
     @Test
     void getUserByIdTest() {
-        var author1 = new Author("testId1", "test", "test", "test", List.of(), List.of());
+        var author1 = new Author("testId1", "test", "test", "test", Set.of(), Set.of());
 
-        when(authorRepository.findById(author1.id())).thenReturn(Optional.of(author1));
+        when(authorRepository.findById(author1.getId())).thenReturn(Optional.of(author1));
 
-        var res = authorService.getAuthorById(author1.id());
+        var res = authorService.getAuthorById(author1.getId());
         assertEquals(author1, res);
     }
 

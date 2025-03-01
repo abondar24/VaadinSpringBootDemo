@@ -1,19 +1,36 @@
 package org.abondar.experimental.articlemanager.model;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.List;
 
-public record Article(
+@Node
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Article {
 
-        @Id String id,
+    @Id
+    private  String id;
 
-        String title, String articleKey,
+    private String title;
 
-        @Relationship(type = "AUTHOR") Author author,
+    @Relationship(type = "CO_AUTHOR")
+    private String articleKey;
 
-        @Relationship(type = "CO_AUTHOR") List<Author> coAuthors) {
+    @Relationship(type = "AUTHOR")
+    private Author author;
+
+    private List<Author> coAuthors;
+
+
+
 
 }
+

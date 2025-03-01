@@ -17,8 +17,8 @@ public interface ArticleRepository extends Neo4jRepository<Article,String> {
     @Query("MATCH (a:Article)-[r:CO_AUTHOR]->(author:Author {id: $authorId}) DELETE r")
     void removeCoAuthor(@Param("authorId") String authorId);
 
-    @Query("MATCH (a:Article) WHERE a.mainAuthor.id = $authorId")
-    List<Article> findArticlesByAuthor(String authorId);
+    @Query("MATCH (a:Article)-[:AUTHOR]->(author:Author) WHERE author.id = $authorId RETURN a")
+    List<Article> findArticlesByAuthor(@Param("authorId") String authorId);
 
     @Query("MATCH (a:Article {id: $id}) DETACH DELETE a")
     void deleteById(@Param("id") String id);

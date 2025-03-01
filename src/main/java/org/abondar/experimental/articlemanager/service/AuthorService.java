@@ -22,7 +22,7 @@ public class AuthorService {
 
     public Author save(String firstName, String lastName, String email) {
         var id = UUID.randomUUID().toString();
-        var author = new Author(id, firstName, lastName, email, List.of(), List.of());
+        var author = new Author(id, firstName, lastName, email, Set.of(), Set.of());
 
         log.info("Author saved with id {}", id);
 
@@ -37,7 +37,7 @@ public class AuthorService {
     }
 
     public Author updateAuthor(Author author) {
-        getAuthorById(author.id());
+        getAuthorById(author.getId());
 
         return authorRepository.save(author);
     }

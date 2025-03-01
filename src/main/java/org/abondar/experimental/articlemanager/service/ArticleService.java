@@ -30,7 +30,7 @@ public class ArticleService {
 
     public Article saveAndUploadArticle(String title, String authorId, MultipartFile file, List<String> coAuthorsIds) throws Exception {
         var id = UUID.randomUUID().toString();
-        var articleKey = authorId = "/" + id;
+        var articleKey = authorId + "/" + id;
 
         var author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new AuthorNotFoundException("Author not found"));
@@ -41,30 +41,30 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    public void setCoAuthors(List<String> coAuthorsIds, String articleId) throws Exception {
-        var article = getArticle(articleId);
-
-        var coAuthors = getCoAuthors(coAuthorsIds);
-        if (!coAuthors.isEmpty()) {
-            article.coAuthors().addAll(coAuthors);
-            articleRepository.save(article);
-        }
-    }
 
     public List<Article> getArticlesByAuthor(String authorId) {
         return articleRepository.findArticlesByAuthor(authorId);
     }
 
-    public void updateArticle(String articleId,MultipartFile file) throws Exception{
-        var article = getArticle(articleId);
+    public Article updateArticle(Article article, MultipartFile file, List<String> coAuthorsIds) throws Exception {
+         getArticle(article.getId());
 
-        fileUploadService.uploadFile(article.articleKey(),file);
+        if (file != null && !file.isEmpty()) {
+            fileUploadService.uploadFile(article.getArticleKey(), file);
+        }
+
+        var coAuthors = getCoAuthors(coAuthorsIds);
+        if (!coAuthors.isEmpty()) {
+            article.getCoAuthors().addAll(coAuthors);
+        }
+
+        return articleRepository.save(article);
     }
 
     public void deleteArticle(String articleId) throws Exception {
         var article = getArticle(articleId);
 
-        fileUploadService.deleteFile(article.articleKey());
+        fileUploadService.deleteFile(article.getArticleKey());
         articleRepository.delete(article);
     }
 
