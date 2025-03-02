@@ -1,8 +1,9 @@
 package org.abondar.experimental.articlemanager.service;
 
-import org.abondar.experimental.articlemanager.aws.AwsProperties;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -14,7 +15,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 import java.io.IOException;
 
@@ -42,14 +45,8 @@ public class FileUploadServiceITest {
         registry.add("aws.localstack.endpoint", () -> "http://" + localStack.getHost() + ":" + localStack.getFirstMappedPort());
     }
 
-    @BeforeAll
-    static void init() {
-        localStack.start();
-
-    }
-
     @BeforeEach
-    void createBucket(){
+    void createBucket() {
         s3Client.createBucket(CreateBucketRequest.builder()
                 .bucket("articles")
                 .build());
@@ -68,7 +65,7 @@ public class FileUploadServiceITest {
                 .build());
 
         assertNotNull(s3Object);
-        assertEquals(file.getContentType(),s3Object.response().contentType());
+        assertEquals(file.getContentType(), s3Object.response().contentType());
     }
 
     @Test
@@ -80,7 +77,7 @@ public class FileUploadServiceITest {
 
         fileUploadService.deleteFile(key);
 
-        assertThrows(NoSuchKeyException.class, () ->  s3Client.getObject(GetObjectRequest.builder()
+        assertThrows(NoSuchKeyException.class, () -> s3Client.getObject(GetObjectRequest.builder()
                 .bucket("articles")
                 .key(key)
                 .build()));

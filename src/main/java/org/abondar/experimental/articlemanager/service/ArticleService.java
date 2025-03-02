@@ -47,7 +47,7 @@ public class ArticleService {
     }
 
     public Article updateArticle(Article article, MultipartFile file, List<String> coAuthorsIds) throws Exception {
-         getArticle(article.getId());
+        getArticle(article.getId());
 
         if (file != null && !file.isEmpty()) {
             fileUploadService.uploadFile(article.getArticleKey(), file);

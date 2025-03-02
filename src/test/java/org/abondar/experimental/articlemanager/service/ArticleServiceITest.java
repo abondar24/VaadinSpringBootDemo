@@ -87,13 +87,10 @@ public class ArticleServiceITest {
         var article = articleService.saveAndUploadArticle(title, author.getId(), file, List.of());
 
         var coAuthor = authorService.save("John", "Test", "john.test@test.com");
-        articleService.updateArticle(article,null,List.of(coAuthor.getId()));
+        var res = articleService.updateArticle(article, null, List.of(coAuthor.getId()));
 
-        var res = articleService.getArticlesByAuthor(author.getId()).getFirst();
         assertFalse(res.getCoAuthors().isEmpty());
-        assertEquals(coAuthor.getId(), res.getCoAuthors().getFirst());
-
-        assertNotNull(article.getId());
+        assertEquals(coAuthor.getId(), res.getCoAuthors().getFirst().getId());
     }
 
     @Test

@@ -23,7 +23,7 @@ public class Author {
 
     private String email;
 
-    @Relationship(type = "WROTE")
+    @Relationship(type = "WROTE", direction = Relationship.Direction.OUTGOING)
     private Set<Article> articles;
 
     @Relationship(type = "KNOWS", direction = Relationship.Direction.OUTGOING)

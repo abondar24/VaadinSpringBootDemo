@@ -1,7 +1,6 @@
 package org.abondar.experimental.articlemanager.service;
 
 import org.abondar.experimental.articlemanager.exception.AuthorNotFoundException;
-import org.abondar.experimental.articlemanager.model.Author;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -47,7 +46,7 @@ public class AuthorServiceITest {
         var email = "john.doe@test.com";
 
         var author = authorService.save(firstName, lastName, email);
-        assertNotNull(author.id());
+        assertNotNull(author.getId());
     }
 
 
@@ -56,29 +55,28 @@ public class AuthorServiceITest {
         var author1 = authorService.save("user1", "user1", "email1");
         var author2 = authorService.save("user2", "user2", "email2");
 
-        authorService.connectAuthors(author1.id(), author2.id());
+        authorService.connectAuthors(author1.getId(), author2.getId());
 
-        var connections = authorService.findConnectionsById(author1.id());
+        var connections = authorService.findConnectionsById(author1.getId());
         assertFalse(connections.isEmpty());
         assertEquals(1, connections.size());
-        assertEquals(author2.id(), connections.getFirst().id());
+        assertEquals(author2.getId(), connections.getFirst().getId());
     }
 
     @Test
     void updateAuthorTest() {
-        var author1 = authorService.save("user1", "user1", "email1");
-        var update = new Author(author1.id(), "newUser", author1.lastName(), author1.email(),
-                author1.articles(), author1.connections());
+        var author = authorService.save("user1", "user1", "email1");
+        author.setName("John");
 
-        var res = authorService.updateAuthor(update);
-        assertEquals(update.name(), res.name());
+        var res = authorService.updateAuthor(author);
+        assertEquals(author.getName(), res.getName());
     }
 
     @Test
     void deleteAuthorTest() {
         var author1 = authorService.save("user1", "user1", "email1");
 
-        authorService.deleteAuthor(author1.id());
-        assertThrows(AuthorNotFoundException.class, () -> authorService.getAuthorById(author1.id()));
+        authorService.deleteAuthor(author1.getId());
+        assertThrows(AuthorNotFoundException.class, () -> authorService.getAuthorById(author1.getId()));
     }
 }

@@ -21,16 +21,13 @@ public class Article {
 
     private String title;
 
-    @Relationship(type = "CO_AUTHOR")
     private String articleKey;
 
     @Relationship(type = "AUTHOR")
     private Author author;
 
+    @Relationship(type = "CO_AUTHOR", direction = Relationship.Direction.OUTGOING)
     private List<Author> coAuthors;
-
-
-
 
 }
 
