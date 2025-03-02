@@ -13,6 +13,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.abondar.experimental.articlemanager.ui.author.AuthorView;
 
 @Route("")
 @PageTitle("Article manager")
