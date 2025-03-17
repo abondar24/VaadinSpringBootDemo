@@ -25,7 +25,7 @@ public class AuthorView extends HorizontalLayout {
     public AuthorView(AuthorService authorService, AuthorAddUpdateForm authorAddUpdateForm) {
         this.authorService = authorService;
 
-        var verticalLayout = new VerticalLayout();
+        var formLayout = new VerticalLayout();
         var author = new Author();
 
         var authorGrid = createGrid();
@@ -56,8 +56,28 @@ public class AuthorView extends HorizontalLayout {
                 .setHeader("Actions")
                 .setAutoWidth(true);
 
-        verticalLayout.add(authorAddUpdateForm, saveButton);
-        add(verticalLayout, authorGrid);
+        var connectAuthors = new Button("Connect Authors", click -> {
+            var selected = authorGrid.getSelectedItems();
+            if (selected.size() != 2) {
+                Notification.show("Only two authors can be connected at once", 3000, Notification.Position.TOP_CENTER);
+                return;
+            }
+
+            var iterator = selected.iterator();
+            var author1Id = iterator.next().getId();
+            var author2Id = iterator.next().getId();
+
+            authorService.connectAuthors(author1Id, author2Id);
+            log.info("Connected author {} and author {}", author1Id, author2Id);
+            Notification.show("Authors connected", 3000, Notification.Position.TOP_CENTER);
+
+        });
+
+        var gridLayout = new VerticalLayout();
+        gridLayout.add(authorGrid, connectAuthors);
+
+        formLayout.add(authorAddUpdateForm, saveButton);
+        add(formLayout,gridLayout);
 
     }
 
@@ -81,5 +101,4 @@ public class AuthorView extends HorizontalLayout {
         return authorGrid;
     }
 
-    ;
 }
