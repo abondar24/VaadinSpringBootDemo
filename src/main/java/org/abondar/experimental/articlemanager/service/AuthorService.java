@@ -9,7 +9,9 @@ import org.abondar.experimental.articlemanager.repository.ArticleRepository;
 import org.abondar.experimental.articlemanager.repository.AuthorRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -30,10 +32,10 @@ public class AuthorService {
     }
 
     public void connectAuthors(String author1Id, String author2Id) {
-       getAuthorById(author1Id);
-       getAuthorById(author2Id);
+        getAuthorById(author1Id);
+        getAuthorById(author2Id);
 
-       authorRepository.createConnection(author1Id,author2Id);
+        authorRepository.createConnection(author1Id, author2Id);
     }
 
     //TODO: add to ui
@@ -43,7 +45,6 @@ public class AuthorService {
         return authorRepository.save(author);
     }
 
-    //TODO: add to ui
     public List<Author> findConnectionsById(String id) {
         return authorRepository.findConnectionsById(id);
     }
@@ -67,7 +68,7 @@ public class AuthorService {
         return authorRepository.findAuthors(offset, limit);
     }
 
-    public long countAuthors(){
+    public long countAuthors() {
         return authorRepository.count();
     }
 

@@ -1,7 +1,10 @@
 package org.abondar.experimental.articlemanager.ui.author;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -42,29 +45,50 @@ public class AuthorView extends HorizontalLayout {
 
             } catch (ValidationException e) {
                 log.error(e.getMessage());
-                Notification.show("Please correct the errors", 3000, Notification.Position.TOP_CENTER)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                Notification.show("Please correct the errors", 3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
 
         authorGrid.addComponentColumn(at -> {
-                    Button deleteBtn = new Button("Delete", click -> {
-                        authorService.deleteAuthor(at.getId());
-                        Notification.show("Author deleted", 3000, Notification.Position.TOP_CENTER);
-                        log.info("Deleted author {}", at.getId());
-                        authorGrid.getDataProvider().refreshAll();  // Refresh grid after deletion
-                    });
-                    deleteBtn.getStyle().set("color", "red");
-                    return deleteBtn;
-                })
-                .setHeader("Actions")
-                .setAutoWidth(true);
+            var deleteBtn = new Button("", click -> {
+                authorService.deleteAuthor(at.getId());
+                Notification.show("Author deleted", 3000, Notification.Position.TOP_CENTER);
+                log.info("Deleted author {}", at.getId());
+                authorGrid.getDataProvider().refreshAll();  // Refresh grid after deletion
+            });
+            deleteBtn.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_ERROR,
+                    ButtonVariant.LUMO_TERTIARY);
+            deleteBtn.setIcon(new Icon(VaadinIcon.TRASH));
+            deleteBtn.setTooltipText("Delete author");
+
+            var connectionsBtn = new Button("", click -> {
+                var connections = authorService.findConnectionsById(at.getId());
+                var connectionsDialog = new AuthorConnectionsDialog(connections);
+                connectionsDialog.open();
+            });
+            connectionsBtn.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY);
+            connectionsBtn.setIcon(new Icon(VaadinIcon.CONNECT));
+            connectionsBtn.setTooltipText("View connected authors");
+
+            var updateAuthorBtn = new Button("", click -> {
+                log.info("Updating author {}", at.getId());
+            });
+            updateAuthorBtn.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY,
+                    ButtonVariant.LUMO_CONTRAST);
+            updateAuthorBtn.setIcon(new Icon(VaadinIcon.EDIT));
+            updateAuthorBtn.setTooltipText("Update author");
+
+
+            var actionsLayout = new HorizontalLayout();
+            actionsLayout.add(connectionsBtn, updateAuthorBtn, deleteBtn);
+
+            return actionsLayout;
+        }).setHeader("Manage").setAutoWidth(true);
 
         var connectAuthors = new Button("Connect Authors", click -> {
             var selected = authorGrid.getSelectedItems();
             if (selected.size() != 2) {
-                Notification.show("Only two authors can be connected at once", 3000, Notification.Position.TOP_CENTER)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                Notification.show("Only two authors can be connected at once", 3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
                 return;
             }
 
@@ -74,8 +98,7 @@ public class AuthorView extends HorizontalLayout {
 
             authorService.connectAuthors(author1Id, author2Id);
             log.info("Connected author {} and author {}", author1Id, author2Id);
-            Notification.show("Authors connected", 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            Notification.show("Authors connected", 3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
         });
 
@@ -83,7 +106,7 @@ public class AuthorView extends HorizontalLayout {
         gridLayout.add(authorGrid, connectAuthors);
 
         formLayout.add(authorAddUpdateForm, saveButton);
-        add(formLayout,gridLayout);
+        add(formLayout, gridLayout);
 
     }
 
@@ -94,15 +117,11 @@ public class AuthorView extends HorizontalLayout {
         authorGrid.setWidthFull();
         authorGrid.setHeight("400px");
 
-        authorGrid.setDataProvider(DataProvider.fromCallbacks(
-                query -> {
-                    var offset = query.getOffset();
-                    var limit = query.getLimit();
-                    return authorService.getAuthors(offset, limit)
-                            .stream();
-                },
-                query -> (int) authorService.countAuthors()
-        ));
+        authorGrid.setDataProvider(DataProvider.fromCallbacks(query -> {
+            var offset = query.getOffset();
+            var limit = query.getLimit();
+            return authorService.getAuthors(offset, limit).stream();
+        }, query -> (int) authorService.countAuthors()));
 
         return authorGrid;
     }
