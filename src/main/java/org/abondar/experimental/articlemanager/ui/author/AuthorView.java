@@ -43,6 +43,19 @@ public class AuthorView extends HorizontalLayout {
             }
         });
 
+        authorGrid.addComponentColumn(at -> {
+                    Button deleteBtn = new Button("Delete", click -> {
+                        authorService.deleteAuthor(at.getId());
+                        Notification.show("Author deleted", 3000, Notification.Position.TOP_CENTER);
+                        log.info("Deleted author {}", at.getId());
+                        authorGrid.getDataProvider().refreshAll();  // Refresh grid after deletion
+                    });
+                    deleteBtn.getStyle().set("color", "red");
+                    return deleteBtn;
+                })
+                .setHeader("Actions")
+                .setAutoWidth(true);
+
         verticalLayout.add(authorAddUpdateForm, saveButton);
         add(verticalLayout, authorGrid);
 

@@ -36,12 +36,14 @@ public class AuthorService {
        authorRepository.createConnection(author1Id,author2Id);
     }
 
+    //TODO: add to ui
     public Author updateAuthor(Author author) {
         getAuthorById(author.getId());
 
         return authorRepository.save(author);
     }
 
+    //TODO: add to ui
     public List<Author> findConnectionsById(String id) {
         return authorRepository.findConnectionsById(id);
     }
