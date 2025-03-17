@@ -61,5 +61,12 @@ public class AuthorService {
                 .orElseThrow(() -> new AuthorNotFoundException("Author not found"));
     }
 
+    public List<Author> getAuthors(int offset, int limit) {
+        return authorRepository.findAuthors(offset, limit);
+    }
+
+    public long countAuthors(){
+        return authorRepository.count();
+    }
 
 }

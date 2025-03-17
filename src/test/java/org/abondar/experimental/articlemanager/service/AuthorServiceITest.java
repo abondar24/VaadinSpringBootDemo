@@ -79,4 +79,21 @@ public class AuthorServiceITest {
         authorService.deleteAuthor(author1.getId());
         assertThrows(AuthorNotFoundException.class, () -> authorService.getAuthorById(author1.getId()));
     }
+
+    @Test
+    void findAllAuthorsTest() {
+        var author1 = authorService.save("user1", "user1", "email1");
+
+        var res = authorService.getAuthors(0, 1);
+        assertEquals(1, res.size());
+        assertEquals(author1, res.getFirst());
+    }
+
+    @Test
+    void countAuthorsTest() {
+        authorService.save("user1", "user1", "email1");
+        var res = authorService.countAuthors();
+
+        assertEquals(1, res);
+    }
 }
