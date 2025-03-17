@@ -3,6 +3,7 @@ package org.abondar.experimental.articlemanager.ui.author;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.ValidationException;
@@ -35,11 +36,14 @@ public class AuthorView extends HorizontalLayout {
                 authorAddUpdateForm.getBinder().writeBean(author);
                 var savedAuthor = authorService.save(author.getName(), author.getLastName(), author.getEmail());
                 log.info("Saved author {}", savedAuthor.getId());
+
                 authorGrid.getDataProvider().refreshAll();
                 authorAddUpdateForm.getBinder().readBean(new Author());
+
             } catch (ValidationException e) {
                 log.error(e.getMessage());
-                Notification.show("Please correct the errors", 3000, Notification.Position.TOP_CENTER);
+                Notification.show("Please correct the errors", 3000, Notification.Position.TOP_CENTER)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
 
@@ -59,7 +63,8 @@ public class AuthorView extends HorizontalLayout {
         var connectAuthors = new Button("Connect Authors", click -> {
             var selected = authorGrid.getSelectedItems();
             if (selected.size() != 2) {
-                Notification.show("Only two authors can be connected at once", 3000, Notification.Position.TOP_CENTER);
+                Notification.show("Only two authors can be connected at once", 3000, Notification.Position.TOP_CENTER)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
                 return;
             }
 
@@ -69,7 +74,8 @@ public class AuthorView extends HorizontalLayout {
 
             authorService.connectAuthors(author1Id, author2Id);
             log.info("Connected author {} and author {}", author1Id, author2Id);
-            Notification.show("Authors connected", 3000, Notification.Position.TOP_CENTER);
+            Notification.show("Authors connected", 3000, Notification.Position.TOP_CENTER)
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
         });
 
