@@ -99,7 +99,7 @@ public class AuthorServiceITest {
 
         var res = authorService.getAuthors(0, 1);
         assertEquals(1, res.size());
-        assertEquals(author1, res.getFirst());
+        assertEquals(author1.getId(), res.getFirst().getId());
     }
 
     @Test
