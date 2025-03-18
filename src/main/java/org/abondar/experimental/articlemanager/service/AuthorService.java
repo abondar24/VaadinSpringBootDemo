@@ -31,7 +31,6 @@ public class AuthorService {
         return authorRepository.save(author);
     }
 
-    //TODO handle authors already connected
     public void connectAuthors(String author1Id, String author2Id) {
         getAuthorById(author1Id);
         getAuthorById(author2Id);
@@ -39,7 +38,6 @@ public class AuthorService {
         authorRepository.createConnection(author1Id, author2Id);
     }
 
-    //TODO handle authors already disconnected
     public void disconnectAuthors(String author1Id, String author2Id) {
         getAuthorById(author1Id);
         getAuthorById(author2Id);

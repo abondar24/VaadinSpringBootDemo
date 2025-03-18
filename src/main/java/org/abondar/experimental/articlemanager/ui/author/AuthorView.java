@@ -93,11 +93,11 @@ public class AuthorView extends HorizontalLayout {
 
         var connectAuthors = new Button("Connect Authors", click ->
                 handleConnectionAction(authorGrid.getSelectedItems(), authorService::connectAuthors,
-                "connected", NotificationVariant.LUMO_SUCCESS));
+                        AuthorConnectAction.CONNECTED, NotificationVariant.LUMO_SUCCESS));
 
         var disconnectAuthors = new Button("Disconnect Authors", click ->
                 handleConnectionAction(authorGrid.getSelectedItems(), authorService::disconnectAuthors,
-                        "disconnected", NotificationVariant.LUMO_WARNING));
+                        AuthorConnectAction.DISCONNECTED, NotificationVariant.LUMO_WARNING));
 
         var connectLayout = new HorizontalLayout();
         connectLayout.add(connectAuthors, disconnectAuthors);
@@ -125,10 +125,10 @@ public class AuthorView extends HorizontalLayout {
         return authorGrid;
     }
 
-    private void handleConnectionAction(Set <Author> selected, BiConsumer<String,String> action,
-                                        String actionName, NotificationVariant notificationVariant) {
+    private void handleConnectionAction(Set<Author> selected, BiConsumer<String, String> action,
+                                        AuthorConnectAction actionName, NotificationVariant notificationVariant) {
         if (selected.size() != 2) {
-            Notification.show("Only two authors can be" + actionName +" at once", 3000,
+            Notification.show("Only two authors can be" + actionName + " at once", 3000,
                     Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
             return;
         }
@@ -137,10 +137,22 @@ public class AuthorView extends HorizontalLayout {
         var author1Id = iterator.next().getId();
         var author2Id = iterator.next().getId();
 
+        var connections = authorService.findConnectionsById(author1Id);
+        var connectionExists = connections.stream()
+                .anyMatch(author -> author.getId().equals(author2Id));
+
+        if ((connectionExists && actionName == AuthorConnectAction.CONNECTED) ||
+                (!connectionExists && actionName == AuthorConnectAction.DISCONNECTED)) {
+            Notification.show("Authors are already " + actionName.name().toLowerCase(), 3000,
+                    Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+            return;
+        }
+
+
         action.accept(author1Id, author2Id);
 
         log.info("Connected author {} and author {}", author1Id, author2Id);
-        Notification.show("Authors "+ actionName, 3000,
+        Notification.show("Authors " + actionName, 3000,
                 Notification.Position.TOP_CENTER).addThemeVariants(notificationVariant);
 
     }
