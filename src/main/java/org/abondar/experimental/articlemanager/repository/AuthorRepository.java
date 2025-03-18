@@ -17,6 +17,14 @@ public interface AuthorRepository extends Neo4jRepository<Author,String> {
     void createConnection(@Param("author1Id") String author1Id,
                           @Param("author2Id") String author2Id);
 
+    @Query("MATCH (a:Author {id: $author1Id})-[r1:KNOWS]->(b:Author {id: $author2Id}) " +
+            "DELETE r1 " +
+            "WITH a, b " +
+            "MATCH (b)-[r2:KNOWS]->(a) " +
+            "DELETE r2")
+    void removeConnection(@Param("author1Id") String author1Id,
+                          @Param("author2Id") String author2Id);
+
     @Query("MATCH (a:Author)-[:KNOWS]->(b:Author) WHERE a.id = $id RETURN b")
     List<Author> findConnectionsById(String id);
 

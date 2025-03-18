@@ -85,6 +85,22 @@ public class AuthorServiceTest {
     }
 
     @Test
+    void deleteConnectionsTest() {
+        var author1 = new Author("testId1", "test", "test", "test", Set.of(), Set.of());
+        var author2 = new Author("testId2", "test", "test", "test", Set.of(), Set.of());
+
+        when(authorRepository.findById(author1.getId())).thenReturn(Optional.of(author1));
+        when(authorRepository.findById(author2.getId())).thenReturn(Optional.of(author2));
+        doNothing().when(authorRepository).removeConnection(author1.getId(), author2.getId());
+
+        authorService.disconnectAuthors(author1.getId(), author2.getId());
+
+        verify(authorRepository, times(1)).findById(author1.getId());
+        verify(authorRepository, times(1)).findById(author2.getId());
+        verify(authorRepository, times(1)).removeConnection(author1.getId(), author2.getId());
+    }
+
+    @Test
     void deleteAuthorTest() {
         var author = new Author("testId1", "test", "test", "test", Set.of(), Set.of());
         when(authorRepository.findById(author.getId())).thenReturn(Optional.of(author));

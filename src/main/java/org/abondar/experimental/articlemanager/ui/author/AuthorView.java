@@ -18,6 +18,9 @@ import org.abondar.experimental.articlemanager.model.Author;
 import org.abondar.experimental.articlemanager.service.AuthorService;
 import org.abondar.experimental.articlemanager.ui.MainLayout;
 
+import java.util.Set;
+import java.util.function.BiConsumer;
+
 
 @Route(value = "authors", layout = MainLayout.class)
 @PageTitle("Article manager/Authors")
@@ -88,29 +91,22 @@ public class AuthorView extends HorizontalLayout {
         //TODO: add search by name and last name
         //TODO: update user ui
 
-        var connectAuthors = new Button("Connect Authors", click -> {
-            var selected = authorGrid.getSelectedItems();
-            if (selected.size() != 2) {
-                Notification.show("Only two authors can be connected at once", 3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
-                return;
-            }
+        var connectAuthors = new Button("Connect Authors", click ->
+                handleConnectionAction(authorGrid.getSelectedItems(), authorService::connectAuthors,
+                "connected", NotificationVariant.LUMO_SUCCESS));
 
-            var iterator = selected.iterator();
-            var author1Id = iterator.next().getId();
-            var author2Id = iterator.next().getId();
+        var disconnectAuthors = new Button("Disconnect Authors", click ->
+                handleConnectionAction(authorGrid.getSelectedItems(), authorService::disconnectAuthors,
+                        "disconnected", NotificationVariant.LUMO_WARNING));
 
-            authorService.connectAuthors(author1Id, author2Id);
-            log.info("Connected author {} and author {}", author1Id, author2Id);
-            Notification.show("Authors connected", 3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-
-        });
+        var connectLayout = new HorizontalLayout();
+        connectLayout.add(connectAuthors, disconnectAuthors);
 
         var gridLayout = new VerticalLayout();
-        gridLayout.add(authorGrid, connectAuthors);
+        gridLayout.add(authorGrid, connectLayout);
 
         formLayout.add(authorAddUpdateForm, saveButton);
         add(formLayout, gridLayout);
-
     }
 
     private Grid<Author> createGrid() {
@@ -127,6 +123,26 @@ public class AuthorView extends HorizontalLayout {
         }, query -> (int) authorService.countAuthors()));
 
         return authorGrid;
+    }
+
+    private void handleConnectionAction(Set <Author> selected, BiConsumer<String,String> action,
+                                        String actionName, NotificationVariant notificationVariant) {
+        if (selected.size() != 2) {
+            Notification.show("Only two authors can be" + actionName +" at once", 3000,
+                    Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
+            return;
+        }
+
+        var iterator = selected.iterator();
+        var author1Id = iterator.next().getId();
+        var author2Id = iterator.next().getId();
+
+        action.accept(author1Id, author2Id);
+
+        log.info("Connected author {} and author {}", author1Id, author2Id);
+        Notification.show("Authors "+ actionName, 3000,
+                Notification.Position.TOP_CENTER).addThemeVariants(notificationVariant);
+
     }
 
 }

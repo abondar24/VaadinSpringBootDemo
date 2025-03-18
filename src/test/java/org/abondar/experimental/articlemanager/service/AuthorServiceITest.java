@@ -64,6 +64,19 @@ public class AuthorServiceITest {
     }
 
     @Test
+    void disconnectAuthorsTest() {
+        var author1 = authorService.save("user1", "user1", "email1");
+        var author2 = authorService.save("user2", "user2", "email2");
+
+        authorService.connectAuthors(author1.getId(), author2.getId());
+
+        authorService.disconnectAuthors(author1.getId(), author2.getId());
+
+        var connections = authorService.findConnectionsById(author1.getId());
+        assertTrue(connections.isEmpty());
+    }
+
+    @Test
     void updateAuthorTest() {
         var author = authorService.save("user1", "user1", "email1");
         author.setName("John");
