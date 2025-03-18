@@ -85,6 +85,9 @@ public class AuthorView extends HorizontalLayout {
             return actionsLayout;
         }).setHeader("Manage").setAutoWidth(true);
 
+        //TODO: add search by name and last name
+        //TODO: update user ui
+
         var connectAuthors = new Button("Connect Authors", click -> {
             var selected = authorGrid.getSelectedItems();
             if (selected.size() != 2) {

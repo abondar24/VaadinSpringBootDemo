@@ -28,6 +28,7 @@ public class ArticleService {
 
     private final FileUploadService fileUploadService;
 
+    //TODO: add to ui
     public Article saveAndUploadArticle(String title, String authorId, MultipartFile file, List<String> coAuthorsIds) throws Exception {
         var id = UUID.randomUUID().toString();
         var articleKey = authorId + "/" + id;
@@ -41,11 +42,12 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-
+    //TODO: add to ui
     public List<Article> getArticlesByAuthor(String authorId) {
         return articleRepository.findArticlesByAuthor(authorId);
     }
 
+    //TODO: add to ui
     public Article updateArticle(Article article, MultipartFile file, List<String> coAuthorsIds) throws Exception {
         getArticle(article.getId());
 
@@ -61,6 +63,7 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
+    //TODO: add to ui
     public void deleteArticle(String articleId) throws Exception {
         var article = getArticle(articleId);
 

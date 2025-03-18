@@ -38,6 +38,8 @@ public class AuthorService {
         authorRepository.createConnection(author1Id, author2Id);
     }
 
+    //TODO: add authors disconnection
+
     //TODO: add to ui
     public Author updateAuthor(Author author) {
         getAuthorById(author.getId());
