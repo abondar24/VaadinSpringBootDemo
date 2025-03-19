@@ -45,6 +45,10 @@ public class AuthorService {
         authorRepository.removeConnection(author1Id, author2Id);
     }
 
+    public boolean connectionExists(String author1Id, String author2Id) {
+        return authorRepository.checkExistingConnection(author1Id, author2Id);
+    }
+
     //TODO: add to ui
     public Author updateAuthor(Author author) {
         getAuthorById(author.getId());

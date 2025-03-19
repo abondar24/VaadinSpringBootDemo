@@ -1,11 +1,14 @@
 package org.abondar.experimental.articlemanager.service;
 
 import org.abondar.experimental.articlemanager.exception.AuthorNotFoundException;
+import org.abondar.experimental.articlemanager.model.Author;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
@@ -29,15 +32,19 @@ public class AuthorServiceITest {
     @Autowired
     private AuthorService authorService;
 
+    @Autowired
+    private Neo4jTemplate neo4jTemplate;
+
     @DynamicPropertySource
     static void configureTestProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.neo4j.uri", () -> "bolt://" + neo4j.getHost() + ":" + neo4j.getFirstMappedPort());
     }
 
-    @BeforeAll
-    static void init() {
-        neo4j.start();
-    }
+
+   @BeforeEach
+   void cleanDB(){
+        neo4jTemplate.deleteAll(Author.class);
+   }
 
     @Test
     void saveAuthorTest() {
@@ -108,5 +115,16 @@ public class AuthorServiceITest {
         var res = authorService.countAuthors();
 
         assertEquals(1, res);
+    }
+
+    @Test
+    void connectionExistsTest() {
+        var author1 = authorService.save("user1", "user1", "email1");
+        var author2 = authorService.save("user2", "user2", "email2");
+
+        authorService.connectAuthors(author1.getId(), author2.getId());
+
+        var res = authorService.connectionExists(author1.getId(), author2.getId());
+        assertTrue(res);
     }
 }

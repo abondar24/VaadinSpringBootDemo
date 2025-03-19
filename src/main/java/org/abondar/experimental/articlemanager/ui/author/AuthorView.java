@@ -137,9 +137,7 @@ public class AuthorView extends HorizontalLayout {
         var author1Id = iterator.next().getId();
         var author2Id = iterator.next().getId();
 
-        var connections = authorService.findConnectionsById(author1Id);
-        var connectionExists = connections.stream()
-                .anyMatch(author -> author.getId().equals(author2Id));
+        var connectionExists = authorService.connectionExists(author1Id, author2Id);
 
         if ((connectionExists && actionName == AuthorConnectAction.CONNECTED) ||
                 (!connectionExists && actionName == AuthorConnectAction.DISCONNECTED)) {
