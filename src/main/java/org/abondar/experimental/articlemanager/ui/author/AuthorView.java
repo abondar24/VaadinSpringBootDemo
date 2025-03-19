@@ -28,29 +28,43 @@ import java.util.function.BiConsumer;
 public class AuthorView extends HorizontalLayout {
 
     private final AuthorService authorService;
+    private Author currentAuthor;
 
     public AuthorView(AuthorService authorService, AuthorAddUpdateForm authorAddUpdateForm) {
         this.authorService = authorService;
+        this.currentAuthor = new Author();
 
         var formLayout = new VerticalLayout();
-        var author = new Author();
 
         var authorGrid = createGrid();
 
         var saveButton = new Button("Save", click -> {
             try {
-                authorAddUpdateForm.getBinder().writeBean(author);
-                var savedAuthor = authorService.save(author.getName(), author.getLastName(), author.getEmail());
-                log.info("Saved author {}", savedAuthor.getId());
+                authorAddUpdateForm.getBinder().writeBean(currentAuthor);
+                Author savedAuthor;
+
+                if (currentAuthor.getId() == null) {
+                    savedAuthor = authorService.save(currentAuthor.getName(), currentAuthor.getLastName(),
+                            currentAuthor.getEmail());
+                    log.info("Saved author {}", savedAuthor.getId());
+                } else {
+                    savedAuthor = authorService.updateAuthor(currentAuthor);
+                    log.info("Updated author {}", savedAuthor.getId());
+                }
 
                 authorGrid.getDataProvider().refreshAll();
-                authorAddUpdateForm.getBinder().readBean(new Author());
+                clearForm(authorAddUpdateForm);
 
             } catch (ValidationException e) {
                 log.error(e.getMessage());
                 Notification.show("Please correct the errors", 3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
+
+        var cancelButton = new Button("Cancel", click -> {
+           clearForm(authorAddUpdateForm);
+        });
+
 
         authorGrid.addComponentColumn(at -> {
             var deleteBtn = new Button("", click -> {
@@ -74,7 +88,8 @@ public class AuthorView extends HorizontalLayout {
             connectionsBtn.setTooltipText("View connected authors");
 
             var updateAuthorBtn = new Button("", click -> {
-                log.info("Updating author {}", at.getId());
+                currentAuthor = authorService.getAuthorById(at.getId());
+                authorAddUpdateForm.getBinder().readBean(currentAuthor);
             });
             updateAuthorBtn.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY,
                     ButtonVariant.LUMO_CONTRAST);
@@ -89,7 +104,6 @@ public class AuthorView extends HorizontalLayout {
         }).setHeader("Manage").setAutoWidth(true);
 
         //TODO: add search by name and last name
-        //TODO: update user ui
 
         var connectAuthors = new Button("Connect Authors", click ->
                 handleConnectionAction(authorGrid.getSelectedItems(), authorService::connectAuthors,
@@ -105,8 +119,16 @@ public class AuthorView extends HorizontalLayout {
         var gridLayout = new VerticalLayout();
         gridLayout.add(authorGrid, connectLayout);
 
-        formLayout.add(authorAddUpdateForm, saveButton);
+        var submitLayout = new HorizontalLayout();
+        submitLayout.add(saveButton, cancelButton);
+
+        formLayout.add(authorAddUpdateForm, submitLayout);
         add(formLayout, gridLayout);
+    }
+
+    private void clearForm(AuthorAddUpdateForm authorAddUpdateForm) {
+        currentAuthor = new Author();
+        authorAddUpdateForm.getBinder().readBean(currentAuthor);
     }
 
     private Grid<Author> createGrid() {

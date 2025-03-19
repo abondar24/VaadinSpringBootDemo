@@ -23,20 +23,24 @@ public class AuthorAddUpdateForm extends FormLayout {
         binder = new Binder<>(Author.class);
 
         var firstName = new TextField();
-        addFormItem(firstName,"First Name");
+        addFormItem(firstName, "First Name");
         binder.bind(firstName, Author::getName,
                 Author::setName);
 
         var lastName = new TextField();
-        addFormItem(lastName,"Last Name");
+        addFormItem(lastName, "Last Name");
         binder.bind(lastName, Author::getLastName,
                 Author::setLastName);
 
         var email = new TextField();
-        addFormItem(email,"Email");
+        addFormItem(email, "Email");
         binder.bind(email, Author::getEmail,
                 Author::setEmail);
 
+    }
+
+    public void setAuthor(Author author) {
+        binder.setBean(author);
     }
 
 }
