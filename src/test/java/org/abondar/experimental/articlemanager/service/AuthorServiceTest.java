@@ -142,4 +142,16 @@ public class AuthorServiceTest {
         assertEquals(author1, res.getFirst());
     }
 
+    @Test
+    void searchAuthorsTest(){
+        var author1 = new Author("testId1", "test", "test", "test", Set.of(), Set.of());
+
+        when(authorRepository.findByNameContainingIgnoreCase(author1.getName(), author1.getLastName()))
+                .thenReturn(List.of(author1));
+
+        var res = authorService.searchAuthors(author1.getName(), author1.getLastName());
+        assertEquals(1, res.size());
+        assertEquals(author1, res.getFirst());
+    }
+
 }

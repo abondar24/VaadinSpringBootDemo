@@ -7,6 +7,8 @@ import org.abondar.experimental.articlemanager.exception.AuthorNotFoundException
 import org.abondar.experimental.articlemanager.model.Author;
 import org.abondar.experimental.articlemanager.repository.ArticleRepository;
 import org.abondar.experimental.articlemanager.repository.AuthorRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -82,4 +84,7 @@ public class AuthorService {
         return authorRepository.count();
     }
 
+    public List<Author> searchAuthors(String name, String lastName) {
+        return authorRepository.findByNameContainingIgnoreCase(name, lastName);
+    }
 }

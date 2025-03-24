@@ -127,4 +127,13 @@ public class AuthorServiceITest {
         var res = authorService.connectionExists(author1.getId(), author2.getId());
         assertTrue(res);
     }
+
+    @Test
+    void searchAuthorsTest() {
+        var author1 = authorService.save("user1", "user1", "email1");
+
+        var res = authorService.searchAuthors(author1.getName(),author1.getLastName());
+        assertEquals(1, res.size());
+        assertEquals(author1.getId(), res.getFirst().getId());
+    }
 }
