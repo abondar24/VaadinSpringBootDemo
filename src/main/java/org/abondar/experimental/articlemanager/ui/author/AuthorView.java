@@ -21,7 +21,10 @@ import org.abondar.experimental.articlemanager.ui.MainLayout;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-
+//TODO: move save and cancel to form
+//TODO: move grid to another view
+//TODO: do todo's above if desired behaviour will be possible to achieve for article
+//TODO: reconsider search filter
 @Route(value = "authors", layout = MainLayout.class)
 @PageTitle("Article manager/Authors")
 @Slf4j
@@ -32,6 +35,7 @@ public class AuthorView extends HorizontalLayout {
 
     public AuthorView(AuthorService authorService, AuthorAddUpdateForm authorAddUpdateForm) {
         this.authorService = authorService;
+
         this.currentAuthor = new Author();
 
         var formLayout = new VerticalLayout();
@@ -61,9 +65,7 @@ public class AuthorView extends HorizontalLayout {
             }
         });
 
-        var cancelButton = new Button("Cancel", click -> {
-           clearForm(authorAddUpdateForm);
-        });
+        var cancelButton = new Button("Cancel", click -> clearForm(authorAddUpdateForm));
 
 
         authorGrid.addComponentColumn(at -> {
@@ -103,18 +105,7 @@ public class AuthorView extends HorizontalLayout {
             return actionsLayout;
         }).setHeader("Manage").setAutoWidth(true);
 
-        //TODO: add search by name and last name
-
-        var connectAuthors = new Button("Connect Authors", click ->
-                handleConnectionAction(authorGrid.getSelectedItems(), authorService::connectAuthors,
-                        AuthorConnectAction.CONNECTED, NotificationVariant.LUMO_SUCCESS));
-
-        var disconnectAuthors = new Button("Disconnect Authors", click ->
-                handleConnectionAction(authorGrid.getSelectedItems(), authorService::disconnectAuthors,
-                        AuthorConnectAction.DISCONNECTED, NotificationVariant.LUMO_WARNING));
-
-        var connectLayout = new HorizontalLayout();
-        connectLayout.add(connectAuthors, disconnectAuthors);
+        var connectLayout = getConnectLayout(authorService, authorGrid);
 
         var gridLayout = new VerticalLayout();
         gridLayout.add(authorGrid, connectLayout);
@@ -126,6 +117,20 @@ public class AuthorView extends HorizontalLayout {
         add(formLayout, gridLayout);
     }
 
+    private HorizontalLayout getConnectLayout(AuthorService authorService, Grid<Author> authorGrid) {
+        var connectAuthors = new Button("Connect Authors", click ->
+                handleConnectionAction(authorGrid.getSelectedItems(), authorService::connectAuthors,
+                        AuthorConnectAction.CONNECTED, NotificationVariant.LUMO_SUCCESS));
+
+        var disconnectAuthors = new Button("Disconnect Authors", click ->
+                handleConnectionAction(authorGrid.getSelectedItems(), authorService::disconnectAuthors,
+                        AuthorConnectAction.DISCONNECTED, NotificationVariant.LUMO_WARNING));
+
+        var connectLayout = new HorizontalLayout();
+        connectLayout.add(connectAuthors, disconnectAuthors);
+        return connectLayout;
+    }
+
     private void clearForm(AuthorAddUpdateForm authorAddUpdateForm) {
         currentAuthor = new Author();
         authorAddUpdateForm.getBinder().readBean(currentAuthor);
@@ -134,6 +139,11 @@ public class AuthorView extends HorizontalLayout {
     private Grid<Author> createGrid() {
         var authorGrid = new Grid<>(Author.class);
         authorGrid.setColumns("name", "lastName", "email");
+
+        authorGrid.getColumnByKey("name").setResizable(true);
+        authorGrid.getColumnByKey("lastName").setResizable(true);
+        authorGrid.getColumnByKey("email").setResizable(true);
+
         authorGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         authorGrid.setWidthFull();
         authorGrid.setHeight("400px");

@@ -20,7 +20,7 @@ public class AuthorAddUpdateForm extends FormLayout {
     private final Binder<Author> binder;
 
     public AuthorAddUpdateForm() {
-        binder = new Binder<>(Author.class);
+        this.binder = new Binder<>(Author.class);
 
         var firstName = new TextField();
         addFormItem(firstName, "First Name");
