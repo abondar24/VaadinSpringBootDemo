@@ -84,7 +84,19 @@ public class AuthorService {
         return authorRepository.count();
     }
 
-    public List<Author> searchAuthors(String name, String lastName) {
-        return authorRepository.findByNameContainingIgnoreCase(name, lastName);
+    public List<Author> searchAuthors(String searchTerm) {
+
+        if (!searchTerm.contains(" ")){
+            return authorRepository.findByNameContainingIgnoreCase(searchTerm);
+        } else {
+            var split = searchTerm.split(" ");
+            if (split.length == 2){
+                var name = searchTerm.split(" ")[0];
+                var lastName = searchTerm.split(" ")[1];
+                return authorRepository.findByNameAndLastNameContainingIgnoreCase(name, lastName);
+            }
+        }
+
+        return List.of();
     }
 }

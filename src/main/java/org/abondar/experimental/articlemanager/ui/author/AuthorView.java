@@ -9,8 +9,10 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,6 @@ import java.util.function.BiConsumer;
 //TODO: move save and cancel to form
 //TODO: move grid to another view
 //TODO: do todo's above if desired behaviour will be possible to achieve for article
-//TODO: reconsider search filter
 @Route(value = "authors", layout = MainLayout.class)
 @PageTitle("Article manager/Authors")
 @Slf4j
@@ -32,11 +33,17 @@ public class AuthorView extends HorizontalLayout {
 
     private final AuthorService authorService;
     private Author currentAuthor;
+    private final AuthorFilter authorFilter;
+    private final ConfigurableFilterDataProvider<Author, Void, AuthorFilter> dataProvider;
 
     public AuthorView(AuthorService authorService, AuthorAddUpdateForm authorAddUpdateForm) {
         this.authorService = authorService;
 
+        this.authorFilter = new AuthorFilter();
+
         this.currentAuthor = new Author();
+
+        this.dataProvider =  new AuthorDataProvider(authorService).withConfigurableFilter();
 
         var formLayout = new VerticalLayout();
 
@@ -67,6 +74,15 @@ public class AuthorView extends HorizontalLayout {
 
         var cancelButton = new Button("Cancel", click -> clearForm(authorAddUpdateForm));
 
+        var searchField = new TextField();
+        searchField.setWidth("50%");
+        searchField.setPlaceholder("Search");
+        searchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
+        searchField.setValueChangeMode(ValueChangeMode.EAGER);
+        searchField.addValueChangeListener(e -> {
+            authorFilter.setSearchTerm(e.getValue());
+            dataProvider.setFilter(authorFilter);
+        });
 
         authorGrid.addComponentColumn(at -> {
             var deleteBtn = new Button("", click -> {
@@ -108,7 +124,7 @@ public class AuthorView extends HorizontalLayout {
         var connectLayout = getConnectLayout(authorService, authorGrid);
 
         var gridLayout = new VerticalLayout();
-        gridLayout.add(authorGrid, connectLayout);
+        gridLayout.add(searchField, authorGrid, connectLayout);
 
         var submitLayout = new HorizontalLayout();
         submitLayout.add(saveButton, cancelButton);
@@ -148,12 +164,8 @@ public class AuthorView extends HorizontalLayout {
         authorGrid.setWidthFull();
         authorGrid.setHeight("400px");
 
-        authorGrid.setDataProvider(DataProvider.fromCallbacks(query -> {
-            var offset = query.getOffset();
-            var limit = query.getLimit();
-            return authorService.getAuthors(offset, limit).stream();
-        }, query -> (int) authorService.countAuthors()));
 
+        authorGrid.setDataProvider(dataProvider);
         return authorGrid;
     }
 

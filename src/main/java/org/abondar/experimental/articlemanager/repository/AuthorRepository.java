@@ -41,6 +41,11 @@ public interface AuthorRepository extends Neo4jRepository<Author, String> {
             "RETURN EXISTS((a)-[:KNOWS]->(b)) AS connectionExists")
     boolean checkExistingConnection(@Param("author1Id") String author1Id, @Param("author2Id") String author2Id);
 
-    @Query("MATCH (a:Author) WHERE toLower(a.name) CONTAINS toLower($name) AND toLower(a.lastName) CONTAINS toLower($lastName) RETURN a")
-    List<Author> findByNameContainingIgnoreCase(@Param("name") String name, @Param("lastName") String lastName);
+    @Query("MATCH (a:Author) WHERE toLower(a.name) STARTS WITH toLower($name) RETURN a")
+    List<Author> findByNameContainingIgnoreCase(@Param("name") String name);
+
+    @Query("MATCH (a:Author) WHERE toLower(a.name) STARTS WITH toLower($name) " +
+            "AND toLower(a.lastName) CONTAINS toLower($lastName) RETURN a")
+    List<Author> findByNameAndLastNameContainingIgnoreCase(@Param("name") String name,
+                                                           @Param("lastName") String lastName);
 }

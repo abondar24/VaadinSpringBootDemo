@@ -129,10 +129,19 @@ public class AuthorServiceITest {
     }
 
     @Test
-    void searchAuthorsTest() {
+    void searchAuthorsByNameTest() {
         var author1 = authorService.save("user1", "user1", "email1");
 
-        var res = authorService.searchAuthors(author1.getName(),author1.getLastName());
+        var res = authorService.searchAuthors(author1.getName());
+        assertEquals(1, res.size());
+        assertEquals(author1.getId(), res.getFirst().getId());
+    }
+
+    @Test
+    void searchAuthorsByLastNameTest() {
+        var author1 = authorService.save("user1", "user1", "email1");
+
+        var res = authorService.searchAuthors(author1.getName()+" "+author1.getLastName());
         assertEquals(1, res.size());
         assertEquals(author1.getId(), res.getFirst().getId());
     }
