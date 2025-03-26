@@ -1,6 +1,6 @@
 package org.abondar.experimental.articlemanager.service;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.abondar.experimental.articlemanager.model.ArticleFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 @SpringBootTest
 @Tag("integration")
-public class FileUploadServiceITest {
+public class ArticleFileUploadServiceITest {
 
     @Container
     private static final GenericContainer<?> localStack = new LocalStackContainer(DockerImageName.parse("localstack/localstack"))
@@ -54,10 +54,10 @@ public class FileUploadServiceITest {
 
     @Test
     void uploadFileTest() throws IOException {
-        var file = new MockMultipartFile("file", "test.txt", "text/plain", "test".getBytes());
+        var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
         var key = "test-key";
 
-        fileUploadService.uploadFile(key, file);
+        fileUploadService.uploadFile(key, new ArticleFile(file.getInputStream(),file.getSize()));
 
         var s3Object = s3Client.getObject(GetObjectRequest.builder()
                 .bucket("articles")
@@ -70,10 +70,10 @@ public class FileUploadServiceITest {
 
     @Test
     void deleteFileTest() throws IOException {
-        var file = new MockMultipartFile("file", "test.txt", "text/plain", "test".getBytes());
+        var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
         var key = "test-key";
 
-        fileUploadService.uploadFile(key, file);
+        fileUploadService.uploadFile(key,new ArticleFile(file.getInputStream(),file.getSize()));
 
         fileUploadService.deleteFile(key);
 

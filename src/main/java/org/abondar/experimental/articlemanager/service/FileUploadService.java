@@ -2,8 +2,8 @@ package org.abondar.experimental.articlemanager.service;
 
 import lombok.AllArgsConstructor;
 import org.abondar.experimental.articlemanager.aws.AwsProperties;
+import org.abondar.experimental.articlemanager.model.ArticleFile;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
@@ -18,12 +18,12 @@ public class FileUploadService {
     private final S3Client s3Client;
     private final AwsProperties awsProperties;
 
-    public void uploadFile(String key, MultipartFile file) throws IOException {
+    public void uploadFile(String key, ArticleFile articleFile) throws IOException {
         s3Client.putObject(PutObjectRequest.builder()
                 .bucket(awsProperties.getS3Bucket())
                 .key(key)
-                .contentType(file.getContentType())
-                .build(), RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+                .contentType("multipart/form-data")
+                .build(), RequestBody.fromInputStream(articleFile.file(), articleFile.length()));
 
     }
 

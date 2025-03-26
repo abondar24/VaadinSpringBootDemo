@@ -7,10 +7,10 @@ import org.abondar.experimental.articlemanager.exception.ArticleNotFoundExceptio
 import org.abondar.experimental.articlemanager.exception.AuthorNotFoundException;
 import org.abondar.experimental.articlemanager.model.Article;
 import org.abondar.experimental.articlemanager.model.Author;
+import org.abondar.experimental.articlemanager.model.ArticleFile;
 import org.abondar.experimental.articlemanager.repository.ArticleRepository;
 import org.abondar.experimental.articlemanager.repository.AuthorRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class ArticleService {
     private final FileUploadService fileUploadService;
 
     //TODO: add to ui
-    public Article saveAndUploadArticle(String title, String authorId, MultipartFile file, List<String> coAuthorsIds) throws Exception {
+    public Article saveAndUploadArticle(String title, String authorId, ArticleFile articleFile, List<String> coAuthorsIds) throws Exception {
         var id = UUID.randomUUID().toString();
         var articleKey = authorId + "/" + id;
 
@@ -38,7 +38,7 @@ public class ArticleService {
 
         var article = new Article(id, title, articleKey, author, getCoAuthors(coAuthorsIds));
 
-        fileUploadService.uploadFile(articleKey, file);
+        fileUploadService.uploadFile(articleKey, articleFile);
         return articleRepository.save(article);
     }
 
@@ -48,11 +48,11 @@ public class ArticleService {
     }
 
     //TODO: add to ui
-    public Article updateArticle(Article article, MultipartFile file, List<String> coAuthorsIds) throws Exception {
+    public Article updateArticle(Article article, ArticleFile articleFile, List<String> coAuthorsIds) throws Exception {
         getArticle(article.getId());
 
-        if (file != null && !file.isEmpty()) {
-            fileUploadService.uploadFile(article.getArticleKey(), file);
+        if (articleFile != null) {
+            fileUploadService.uploadFile(article.getArticleKey(), articleFile);
         }
 
         var coAuthors = getCoAuthors(coAuthorsIds);

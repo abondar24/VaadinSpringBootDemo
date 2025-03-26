@@ -1,6 +1,7 @@
 package org.abondar.experimental.articlemanager.service;
 
 import org.abondar.experimental.articlemanager.model.Author;
+import org.abondar.experimental.articlemanager.model.ArticleFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -62,17 +63,19 @@ public class ArticleServiceITest {
     @Test
     void saveAndUploadArticleTest() throws Exception {
         var title = "test Title";
-        var file = new MockMultipartFile("file", "test.txt", "text/plain", "test".getBytes());
+        var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
 
-        var article = articleService.saveAndUploadArticle(title, author.getId(), file, List.of());
+        var article = articleService.saveAndUploadArticle(title, author.getId(),
+                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
         assertNotNull(article.getId());
     }
 
     @Test
     void getArticlesByAuthorTest() throws Exception {
         var title = "test Title";
-        var file = new MockMultipartFile("file", "test.txt", "text/plain", "test".getBytes());
-        var article = articleService.saveAndUploadArticle(title, author.getId(), file, List.of());
+        var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
+        var article = articleService.saveAndUploadArticle(title, author.getId(),
+                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
 
         var res = articleService.getArticlesByAuthor(author.getId());
         assertFalse(res.isEmpty());
@@ -83,8 +86,9 @@ public class ArticleServiceITest {
     @Test
     void updateArticleTest() throws Exception {
         var title = "test Title";
-        var file = new MockMultipartFile("file", "test.txt", "text/plain", "test".getBytes());
-        var article = articleService.saveAndUploadArticle(title, author.getId(), file, List.of());
+        var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
+        var article = articleService.saveAndUploadArticle(title, author.getId(),
+                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
 
         var coAuthor = authorService.save("John", "Test", "john.test@test.com");
         var res = articleService.updateArticle(article, null, List.of(coAuthor.getId()));
@@ -96,8 +100,9 @@ public class ArticleServiceITest {
     @Test
     void deleteArticleTest() throws Exception {
         var title = "test Title";
-        var file = new MockMultipartFile("file", "test.txt", "text/plain", "test".getBytes());
-        var article = articleService.saveAndUploadArticle(title, author.getId(), file, List.of());
+        var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
+        var article = articleService.saveAndUploadArticle(title, author.getId(),
+                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
 
         articleService.deleteArticle(article.getId());
 

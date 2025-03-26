@@ -1,6 +1,7 @@
 package org.abondar.experimental.articlemanager.service;
 
 import org.abondar.experimental.articlemanager.aws.AwsProperties;
+import org.abondar.experimental.articlemanager.model.ArticleFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class FileUploadServiceTest {
+public class ArticleFileUploadServiceTest {
 
     @Mock
     private S3Client s3Client;
@@ -38,7 +39,7 @@ public class FileUploadServiceTest {
 
         when(awsProperties.getS3Bucket()).thenReturn("test-bucket");
 
-        fileUploadService.uploadFile(key, file);
+        fileUploadService.uploadFile(key, new ArticleFile(file.getInputStream(),file.getSize()));
         verify(s3Client).putObject(any(PutObjectRequest.class), any(RequestBody.class));
     }
 
