@@ -1,13 +1,18 @@
 package org.abondar.experimental.articlemanager.ui.author;
 
-import com.vaadin.flow.data.provider.*;
+import com.vaadin.flow.data.provider.AbstractBackEndDataProvider;
+import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.QuerySortOrder;
+import com.vaadin.flow.data.provider.SortDirection;
 import org.abondar.experimental.articlemanager.model.Author;
 import org.abondar.experimental.articlemanager.service.AuthorService;
+import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Component
 public class AuthorDataProvider extends AbstractBackEndDataProvider<Author, AuthorFilter> {
 
     private final AuthorService authorService;

@@ -25,7 +25,6 @@ import java.util.function.BiConsumer;
 
 //TODO: move save and cancel to form
 //TODO: move grid to another view
-//TODO: do todo's above if desired behaviour will be possible to achieve for article
 @Route(value = "authors", layout = MainLayout.class)
 @PageTitle("Article manager/Authors")
 @Slf4j
@@ -36,14 +35,15 @@ public class AuthorView extends HorizontalLayout {
     private final AuthorFilter authorFilter;
     private final ConfigurableFilterDataProvider<Author, Void, AuthorFilter> dataProvider;
 
-    public AuthorView(AuthorService authorService, AuthorAddUpdateForm authorAddUpdateForm) {
+    public AuthorView(AuthorService authorService, AuthorAddUpdateForm authorAddUpdateForm,
+                      AuthorDataProvider authorDataProvider) {
         this.authorService = authorService;
 
         this.authorFilter = new AuthorFilter();
 
         this.currentAuthor = new Author();
 
-        this.dataProvider =  new AuthorDataProvider(authorService).withConfigurableFilter();
+        this.dataProvider = authorDataProvider.withConfigurableFilter();
 
         var formLayout = new VerticalLayout();
 

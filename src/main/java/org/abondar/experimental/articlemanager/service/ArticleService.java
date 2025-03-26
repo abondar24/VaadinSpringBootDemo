@@ -28,7 +28,6 @@ public class ArticleService {
 
     private final FileUploadService fileUploadService;
 
-    //TODO: add to ui
     public Article saveAndUploadArticle(String title, String authorId, ArticleFile articleFile, List<String> coAuthorsIds) throws Exception {
         var id = UUID.randomUUID().toString();
         var articleKey = authorId + "/" + id;
