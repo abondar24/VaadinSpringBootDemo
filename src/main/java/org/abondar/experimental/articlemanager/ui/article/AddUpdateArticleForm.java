@@ -10,7 +10,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
-import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
+import com.vaadin.flow.component.upload.receivers.FileBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -32,14 +32,20 @@ import java.util.stream.Collectors;
 public class AddUpdateArticleForm extends FormLayout {
 
     private ArticleFile uploadedFile;
+    private TextField titleField;
+    private ComboBox<Author> authorBox;
 
     public AddUpdateArticleForm(ArticleService articleService, AuthorDataProvider dataProvider) {
 
-        var titleField = new TextField();
+        titleField = new TextField();
+        titleField.setRequired(true);
+        titleField.setRequiredIndicatorVisible(true);
         addFormItem(titleField, "Article Title");
 
 
-        var authorBox = new ComboBox<Author>("Select Author");
+        authorBox = new ComboBox<Author>("Select Author");
+        authorBox.setRequired(true);
+        authorBox.setRequiredIndicatorVisible(true);
         authorBox.setDataProvider(dataProvider, AuthorFilter::new);
         authorBox.setItemLabelGenerator(a -> a.getName() + " " + a.getLastName());
         addFormItem(authorBox, "Author");
@@ -61,38 +67,72 @@ public class AddUpdateArticleForm extends FormLayout {
         var coAuthorLayout = new HorizontalLayout(coAuthorsBox, selectedAuthors);
         addFormItem(coAuthorLayout, "Co-Authors");
 
-
-        var buffer = new MultiFileMemoryBuffer();
-        var upload = new Upload(buffer);
-
-        upload.addSucceededListener(event -> {
-            String fileName = event.getFileName();
-            var inputStream = buffer.getInputStream(fileName);
-
-            uploadedFile = new ArticleFile(inputStream, event.getContentLength());
-        });
+        var upload = createAndHandleUpload();
         addFormItem(upload, "Upload article");
 
         var saveButton = new Button("Save", event -> {
-            var coAuthorIds = coAuthorsBox.getValue()
-                    .stream()
-                    .map(Author::getId)
-                    .toList();
+            if (isFormValid()) {
+                var coAuthorIds = coAuthorsBox.getValue()
+                        .stream()
+                        .map(Author::getId)
+                        .toList();
 
-            //TODO: create bucket in localstack
-            //TODO: clear form on save
-            //TODO: add edit extensions
-            try {
-                articleService.saveAndUploadArticle(titleField.getTitle(), authorBox.getValue().getId(),
-                        uploadedFile, coAuthorIds);
-            } catch (Exception ex) {
-                log.error(ex.getMessage());
-                Notification.show("Error while uploading file: " + ex.getMessage(), 3000,
-                        Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
+                //TODO: add edit extensions
+                try {
+                    articleService.saveAndUploadArticle(titleField.getTitle(), authorBox.getValue().getId(),
+                            uploadedFile, coAuthorIds);
+
+                    titleField.clear();
+                    authorBox.clear();
+                    coAuthorsBox.clear();
+                    selectedAuthors.clear();
+                    uploadedFile = null;
+                    upload.clearFileList();
+
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                    Notification.show("Error while uploading file: " + ex.getMessage(), 3000,
+                            Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
             }
+
+
         });
         add(saveButton);
     }
 
+    private boolean isFormValid() {
+        if (titleField.isEmpty()) {
+            Notification.show("Title cannot be empty", 3000, Notification.Position.TOP_CENTER)
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            return false;
+        }
+
+        if (authorBox.isEmpty()) {
+            Notification.show("Please select an author", 3000, Notification.Position.TOP_CENTER)
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            return false;
+        }
+
+        if (uploadedFile == null) {
+            Notification.show("Please upload a file", 3000, Notification.Position.TOP_CENTER)
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+    private Upload createAndHandleUpload() {
+        var buffer = new FileBuffer();
+        var upload = new Upload(buffer);
+
+        upload.addSucceededListener(event -> {
+            var inputStream = buffer.getInputStream();
+
+            uploadedFile = new ArticleFile(inputStream, event.getContentLength());
+        });
+        return upload;
+    }
 
 }

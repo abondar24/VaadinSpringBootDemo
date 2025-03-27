@@ -25,6 +25,7 @@ import java.util.function.BiConsumer;
 
 //TODO: move save and cancel to form
 //TODO: move grid to another view
+//TODO: add formvalidation after moving save and cancel buttons
 @Route(value = "authors", layout = MainLayout.class)
 @PageTitle("Article manager/Authors")
 @Slf4j

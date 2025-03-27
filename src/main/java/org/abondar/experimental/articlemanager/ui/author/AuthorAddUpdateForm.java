@@ -23,16 +23,22 @@ public class AuthorAddUpdateForm extends FormLayout {
         this.binder = new Binder<>(Author.class);
 
         var firstName = new TextField();
+        firstName.setRequiredIndicatorVisible(true);
+        firstName.setRequired(true);
         addFormItem(firstName, "First Name");
         binder.bind(firstName, Author::getName,
                 Author::setName);
 
         var lastName = new TextField();
+        lastName.setRequiredIndicatorVisible(true);
+        lastName.setRequired(true);
         addFormItem(lastName, "Last Name");
         binder.bind(lastName, Author::getLastName,
                 Author::setLastName);
 
         var email = new TextField();
+        email.setRequiredIndicatorVisible(true);
+        email.setRequired(true);
         addFormItem(email, "Email");
         binder.bind(email, Author::getEmail,
                 Author::setEmail);
