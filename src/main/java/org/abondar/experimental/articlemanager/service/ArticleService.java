@@ -41,7 +41,6 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    //TODO: add to ui
     public List<Article> getArticlesByAuthor(String authorId) {
         return articleRepository.findArticlesByAuthor(authorId);
     }
@@ -63,7 +62,7 @@ public class ArticleService {
     }
 
     //TODO: add to ui
-    public void deleteArticle(String articleId) throws Exception {
+    public void deleteArticle(String articleId) {
         var article = getArticle(articleId);
 
         fileUploadService.deleteFile(article.getArticleKey());

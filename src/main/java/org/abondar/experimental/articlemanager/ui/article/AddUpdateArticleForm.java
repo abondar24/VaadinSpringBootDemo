@@ -6,6 +6,7 @@ import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -47,8 +48,10 @@ public class AddUpdateArticleForm extends FormLayout {
         authorBox.setRequired(true);
         authorBox.setRequiredIndicatorVisible(true);
         authorBox.setDataProvider(dataProvider, AuthorFilter::new);
-        authorBox.setItemLabelGenerator(a -> a.getName() + " " + a.getLastName());
-        addFormItem(authorBox, "Author");
+        authorBox.setItemLabelGenerator(Author::getFullName);
+
+        var findLayout = createFindLayout(articleService);
+        add(findLayout);
 
         var coAuthorsBox = new MultiSelectComboBox<Author>("Co-Authors");
         coAuthorsBox.setDataProvider(dataProvider, AuthorFilter::new);
@@ -58,8 +61,10 @@ public class AddUpdateArticleForm extends FormLayout {
         selectedAuthors.setReadOnly(true);
 
         coAuthorsBox.addValueChangeListener(e -> {
-            String selectedCoAuthorName = e.getValue().stream()
-                    .map(a -> a.getName() + " " + a.getLastName()).collect(Collectors.joining(", "));
+            String selectedCoAuthorName = e.getValue()
+                    .stream()
+                    .map(Author::getFullName)
+                    .collect(Collectors.joining(", "));
 
             selectedAuthors.setValue(selectedCoAuthorName);
         });
@@ -79,7 +84,7 @@ public class AddUpdateArticleForm extends FormLayout {
 
                 //TODO: add edit extensions
                 try {
-                    articleService.saveAndUploadArticle(titleField.getTitle(), authorBox.getValue().getId(),
+                    articleService.saveAndUploadArticle(titleField.getValue(), authorBox.getValue().getId(),
                             uploadedFile, coAuthorIds);
 
                     titleField.clear();
@@ -99,6 +104,26 @@ public class AddUpdateArticleForm extends FormLayout {
 
         });
         add(saveButton);
+    }
+
+    private HorizontalLayout createFindLayout(ArticleService articleService) {
+        var showArticlesByAuthor = new Button("Show articles", event -> {
+            var author = authorBox.getValue();
+
+            if (author == null) {
+                Notification.show("Please select an author first.", 3000, Notification.Position.TOP_CENTER)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                return;
+            }
+            var articles = articleService.getArticlesByAuthor(author.getId());
+
+            new AuthorArticlesDialog(articles,author).open();
+            authorBox.clear();
+        });
+
+        var findLayout = new HorizontalLayout(authorBox,showArticlesByAuthor);
+        findLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
+        return findLayout;
     }
 
     private boolean isFormValid() {

@@ -27,4 +27,8 @@ public class Author {
 
    @Relationship(type = "KNOWS", direction = Relationship.Direction.OUTGOING)
     private Set<Author> connections;
+
+   public String getFullName(){
+       return name + " " + lastName;
+   }
 }
