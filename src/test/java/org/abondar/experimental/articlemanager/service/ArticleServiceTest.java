@@ -119,11 +119,11 @@ public class ArticleServiceTest {
         var mainAuthor = new Author("testId1", "test", "test", "test", Set.of(), Set.of());
         var article = new Article("test", "test", "test", mainAuthor, new ArrayList<>());
 
-        when(articleRepository.findArticlesByAuthor(mainAuthor.getId())).thenReturn(List.of(article));
+        when(articleRepository.findArticleByAuthor_Id(mainAuthor.getId())).thenReturn(List.of(article));
 
         var res = articleService.getArticlesByAuthor(mainAuthor.getId());
 
-        verify(articleRepository, times(1)).findArticlesByAuthor(mainAuthor.getId());
+        verify(articleRepository, times(1)).findArticleByAuthor_Id(mainAuthor.getId());
         assertEquals(1, res.size());
     }
 

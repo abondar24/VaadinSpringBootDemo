@@ -42,7 +42,7 @@ public class ArticleService {
     }
 
     public List<Article> getArticlesByAuthor(String authorId) {
-        return articleRepository.findArticlesByAuthor(authorId);
+        return articleRepository.findArticleByAuthor_Id(authorId);
     }
 
     //TODO: add to ui

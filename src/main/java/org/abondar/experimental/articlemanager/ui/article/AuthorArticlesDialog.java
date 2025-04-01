@@ -35,8 +35,7 @@ public class AuthorArticlesDialog extends Dialog {
             add(articleList);
         }
 
-        //TODO add file downloading for each article
-        //TODO fix fetching co-authors for article
+        //TODO add file downloading for each article in seprate component
 
         var close = new Button("Close", e -> close());
         getFooter().add(close);
@@ -54,6 +53,7 @@ public class AuthorArticlesDialog extends Dialog {
                     );
 
                     var coAuthorLayout = new VerticalLayout();
+                    coAuthorLayout.add(new Span("Co-authors:"));
                     coAuthorLayout.setSpacing(false);
                     coAuthorLayout.setPadding(false);
 

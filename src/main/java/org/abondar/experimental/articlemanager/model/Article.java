@@ -6,6 +6,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Node
@@ -26,7 +27,7 @@ public class Article {
     private Author author;
 
     @Relationship(type = "CO_AUTHOR", direction = Relationship.Direction.OUTGOING)
-    private List<Author> coAuthors;
+    private List<Author> coAuthors = new ArrayList<>();
 
 }
 

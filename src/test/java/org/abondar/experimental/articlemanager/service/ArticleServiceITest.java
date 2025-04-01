@@ -74,12 +74,16 @@ public class ArticleServiceITest {
     void getArticlesByAuthorTest() throws Exception {
         var title = "test Title";
         var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
+
+        var coAuthor =  authorService.save("James", "Din", "james.din@test.com");
+
         var article = articleService.saveAndUploadArticle(title, author.getId(),
-                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
+                new ArticleFile(file.getInputStream(),file.getSize()), List.of(coAuthor.getId()));
 
         var res = articleService.getArticlesByAuthor(author.getId());
         assertFalse(res.isEmpty());
         assertEquals(article.getId(), res.getFirst().getId());
+        assertEquals(coAuthor.getId(), res.getFirst().getCoAuthors().getFirst().getId());
     }
 
 
