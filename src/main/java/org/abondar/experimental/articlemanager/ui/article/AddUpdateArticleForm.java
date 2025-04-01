@@ -22,6 +22,7 @@ import org.abondar.experimental.articlemanager.model.Author;
 import org.abondar.experimental.articlemanager.service.ArticleService;
 import org.abondar.experimental.articlemanager.ui.author.AuthorDataProvider;
 import org.abondar.experimental.articlemanager.ui.author.AuthorFilter;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.stream.Collectors;
 
@@ -35,6 +36,12 @@ public class AddUpdateArticleForm extends FormLayout {
     private ArticleFile uploadedFile;
     private TextField titleField;
     private ComboBox<Author> authorBox;
+
+    @Value("${aws.localstack.endpoint}")
+    private String awsEndpoint;
+
+    @Value("${aws.s3-bucket}")
+    private String articleBucket;
 
     public AddUpdateArticleForm(ArticleService articleService, AuthorDataProvider dataProvider) {
 
@@ -117,7 +124,7 @@ public class AddUpdateArticleForm extends FormLayout {
             }
             var articles = articleService.getArticlesByAuthor(author.getId());
 
-            new AuthorArticlesDialog(articles,author).open();
+            new AuthorArticlesDialog(articles,author,awsEndpoint,articleBucket).open();
             authorBox.clear();
         });
 
