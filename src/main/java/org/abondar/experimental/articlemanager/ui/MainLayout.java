@@ -18,7 +18,6 @@ import org.abondar.experimental.articlemanager.ui.author.AuthorView;
 
 @Route("")
 @PageTitle("Article manager")
-@Layout
 public class MainLayout extends AppLayout implements RouterLayout {
 
 
@@ -39,18 +38,16 @@ public class MainLayout extends AppLayout implements RouterLayout {
         scroller.setClassName(LumoUtility.Padding.SMALL);
         addToDrawer(scroller);
 
-        var themeToggleButton = new Button("🌙 Dark Mode", event -> {
-            getUI().ifPresent(ui -> {
-                boolean isDarkMode = ui.getElement().getThemeList().contains("dark");
-                if (isDarkMode) {
-                    ui.getElement().getThemeList().remove("dark");
-                    event.getSource().setText("🌙 Dark Mode");
-                } else {
-                    ui.getElement().getThemeList().add("dark");
-                    event.getSource().setText("☀️ Light Mode");
-                }
-            });
-        });
+        var themeToggleButton = new Button("🌙 Dark Mode", event -> getUI().ifPresent(ui -> {
+            boolean isDarkMode = ui.getElement().getThemeList().contains("dark");
+            if (isDarkMode) {
+                ui.getElement().getThemeList().remove("dark");
+                event.getSource().setText("🌙 Dark Mode");
+            } else {
+                ui.getElement().getThemeList().add("dark");
+                event.getSource().setText("☀️ Light Mode");
+            }
+        }));
         themeToggleButton.getStyle()
                 .set("background", "transparent")
                 .set("border", "none")
