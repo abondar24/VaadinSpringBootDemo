@@ -1,6 +1,8 @@
 package org.abondar.experimental.articlemanager.repository;
 
 import org.abondar.experimental.articlemanager.model.Article;
+import org.abondar.experimental.articlemanager.model.ArticleProjection;
+import org.abondar.experimental.articlemanager.model.Author;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,8 +18,11 @@ public interface ArticleRepository extends Neo4jRepository<Article,String> {
 
     @Query("MATCH (a:Article)-[r:CO_AUTHOR]->(author:Author {id: $authorId}) DELETE r")
     void removeCoAuthor(@Param("authorId") String authorId);
-    
+
     List<Article> findArticleByAuthor_Id(String authorId);
+
+    @Query("MATCH (a:Article) RETURN a SKIP $offset LIMIT $limit")
+    List<ArticleProjection> findArticles(@Param("offset") int offset, @Param("limit") int limit);
 
     @Query("MATCH (a:Article {id: $id}) DETACH DELETE a")
     void deleteById(@Param("id") String id);

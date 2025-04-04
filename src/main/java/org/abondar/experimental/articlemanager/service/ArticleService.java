@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.abondar.experimental.articlemanager.exception.ArticleNotFoundException;
 import org.abondar.experimental.articlemanager.exception.AuthorNotFoundException;
 import org.abondar.experimental.articlemanager.model.Article;
+import org.abondar.experimental.articlemanager.model.ArticleProjection;
 import org.abondar.experimental.articlemanager.model.Author;
 import org.abondar.experimental.articlemanager.model.ArticleFile;
 import org.abondar.experimental.articlemanager.repository.ArticleRepository;
@@ -61,7 +62,10 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    //TODO: add to ui
+    public List<ArticleProjection> getArticles(int offset, int limit){
+          return articleRepository.findArticles(offset, limit);
+    }
+
     public void deleteArticle(String articleId) {
         var article = getArticle(articleId);
 

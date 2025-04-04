@@ -113,4 +113,16 @@ public class ArticleServiceITest {
         var res = articleService.getArticlesByAuthor(author.getId());
         assertTrue(res.isEmpty());
     }
+
+    @Test
+    void getArticlesTest() throws Exception {
+        var title = "test Title";
+        var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
+        var article = articleService.saveAndUploadArticle(title, author.getId(),
+                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
+
+        var res = articleService.getArticles(0,1);
+        assertFalse(res.isEmpty());
+        assertEquals(article.getId(), res.getFirst().getId());
+    }
 }
