@@ -1,10 +1,7 @@
 package org.abondar.experimental.articlemanager.service;
 
 import org.abondar.experimental.articlemanager.exception.ArticleNotFoundException;
-import org.abondar.experimental.articlemanager.model.Article;
-import org.abondar.experimental.articlemanager.model.ArticleFile;
-import org.abondar.experimental.articlemanager.model.ArticleProjection;
-import org.abondar.experimental.articlemanager.model.Author;
+import org.abondar.experimental.articlemanager.model.*;
 import org.abondar.experimental.articlemanager.repository.ArticleRepository;
 import org.abondar.experimental.articlemanager.repository.AuthorRepository;
 import org.junit.jupiter.api.Test;
@@ -12,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
@@ -116,7 +114,7 @@ public class ArticleServiceTest {
     }
 
     @Test
-    void getArticlesByAutorTest() {
+    void getArticlesByAutorTestById() {
         var mainAuthor = new Author("testId1", "test", "test", "test", Set.of(), Set.of());
         var article = new Article("test", "test", "test", mainAuthor, new ArrayList<>());
 
@@ -138,34 +136,5 @@ public class ArticleServiceTest {
 
         verify(fileUploadService, times(1)).deleteFile(any(String.class));
         verify(articleRepository, times(1)).delete(any(Article.class));
-    }
-
-    @Test
-    void getArticlesTest() throws Exception {
-        var article = new Article("test", "test", "test", null, new ArrayList<>());
-
-        var articleRes = new ArticleProjection(){
-            @Override
-            public String getId() {
-                return article.getId();
-            }
-
-            @Override
-            public String getTitle() {
-                return article.getTitle();
-            }
-
-            @Override
-            public String getArticleKey() {
-                return article.getArticleKey();
-            }
-        };
-
-        when(articleRepository.findArticles(0,1)).thenReturn(List.of(articleRes));
-
-        var res = articleService.getArticles(0,1);
-        verify(articleRepository, times(1)).findArticles(0,1);
-        assertEquals(1, res.size());
-        assertEquals(article.getTitle(), res.getFirst().getTitle());
     }
 }

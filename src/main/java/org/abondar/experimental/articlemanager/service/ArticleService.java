@@ -6,11 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.abondar.experimental.articlemanager.exception.ArticleNotFoundException;
 import org.abondar.experimental.articlemanager.exception.AuthorNotFoundException;
 import org.abondar.experimental.articlemanager.model.Article;
-import org.abondar.experimental.articlemanager.model.ArticleProjection;
 import org.abondar.experimental.articlemanager.model.Author;
 import org.abondar.experimental.articlemanager.model.ArticleFile;
 import org.abondar.experimental.articlemanager.repository.ArticleRepository;
 import org.abondar.experimental.articlemanager.repository.AuthorRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class ArticleService {
 
     //TODO: add to ui
     public Article updateArticle(Article article, ArticleFile articleFile, List<String> coAuthorsIds) throws Exception {
-        getArticle(article.getId());
+        getArticleById(article.getId());
 
         if (articleFile != null) {
             fileUploadService.uploadFile(article.getArticleKey(), articleFile);
@@ -62,18 +63,22 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    public List<ArticleProjection> getArticles(int offset, int limit){
-          return articleRepository.findArticles(offset, limit);
+    public List<Article> getArticles(int offset, int limit){
+          return articleRepository.findAll(PageRequest.of(offset,limit)).getContent();
     }
 
     public void deleteArticle(String articleId) {
-        var article = getArticle(articleId);
+        var article = getArticleById(articleId);
 
         fileUploadService.deleteFile(article.getArticleKey());
         articleRepository.delete(article);
     }
 
-    private Article getArticle(String articleId) {
+    public long countArticles() {
+        return authorRepository.count();
+    }
+
+    public Article getArticleById(String articleId) {
         return articleRepository.findById(articleId)
                 .orElseThrow(() -> new ArticleNotFoundException("Article not found"));
     }

@@ -71,7 +71,7 @@ public class ArticleServiceITest {
     }
 
     @Test
-    void getArticlesByAuthorTest() throws Exception {
+    void getArticlesByAuthorTestById() throws Exception {
         var title = "test Title";
         var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
 
@@ -115,7 +115,7 @@ public class ArticleServiceITest {
     }
 
     @Test
-    void getArticlesTest() throws Exception {
+    void getArticlesByIdTest() throws Exception {
         var title = "test Title";
         var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
         var article = articleService.saveAndUploadArticle(title, author.getId(),
@@ -124,5 +124,17 @@ public class ArticleServiceITest {
         var res = articleService.getArticles(0,1);
         assertFalse(res.isEmpty());
         assertEquals(article.getId(), res.getFirst().getId());
+        assertNotNull(res.getFirst().getAuthor());
+    }
+
+    @Test
+    void countArticlesTest() throws Exception {
+        var title = "test Title";
+        var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
+        articleService.saveAndUploadArticle(title, author.getId(),
+                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
+
+        var res = articleService.countArticles();
+        assertEquals(1,res);
     }
 }
