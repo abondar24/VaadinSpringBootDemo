@@ -9,6 +9,16 @@ spring:
       password: article-manager
 
 
+management:
+    endpoint:
+      health:
+        show-details: always
+    endpoints:
+      web:
+        exposure:
+          include: health, info, env, metrics
+
+
 aws:
  local: true
  localstack:
