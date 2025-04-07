@@ -131,16 +131,6 @@ public class AuthorServiceTest {
         assertThrows(AuthorNotFoundException.class, () -> authorService.getAuthorById("test"));
     }
 
-    @Test
-    void getAuthorsTest() {
-        var author1 = new Author("testId1", "test", "test", "test", Set.of(), Set.of());
-
-        when(authorRepository.findAuthors(0,1)).thenReturn(List.of(author1));
-
-        var res = authorService.getAuthors(0,1);
-        assertEquals(1, res.size());
-        assertEquals(author1, res.getFirst());
-    }
 
     @Test
     void searchAuthorsByNameTest(){

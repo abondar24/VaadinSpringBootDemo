@@ -34,9 +34,6 @@ public interface AuthorRepository extends Neo4jRepository<Author, String> {
     @Query("MATCH (a:Author) WHERE a.id IN $ids RETURN a")
     List<Author> findByIds(List<String> ids);
 
-    //TODO: refactor to use pageable and default query
-    @Query("MATCH (a:Author) RETURN a SKIP $offset LIMIT $limit")
-    List<Author> findAuthors(@Param("offset") int offset, @Param("limit") int limit);
 
     @Query("MATCH (a:Author {id: $author1Id}), (b:Author {id: $author2Id}) " +
             "RETURN EXISTS((a)-[:KNOWS]->(b)) AS connectionExists")
