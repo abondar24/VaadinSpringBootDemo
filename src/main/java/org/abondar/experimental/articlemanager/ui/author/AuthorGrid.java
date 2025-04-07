@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.abondar.experimental.articlemanager.model.Author;
 import org.abondar.experimental.articlemanager.service.AuthorService;
 import org.abondar.experimental.articlemanager.ui.common.DeleteButton;
-import org.abondar.experimental.articlemanager.ui.common.EditButton;
 
 @SpringComponent
 @UIScope
@@ -51,6 +50,19 @@ public class AuthorGrid extends Grid<Author> {
 
         setDataProvider(dataProvider);
 
+        addSelectionListener(event ->
+                {
+                    if (event.getAllSelectedItems().size() == 1) {
+                        event.getFirstSelectedItem()
+                                .ifPresent(authorAddUpdateForm::setAuthorToEdit);
+                    } else {
+                        authorAddUpdateForm.clearForm();
+                    }
+                }
+
+
+        );
+
         addComponentColumn(at -> {
             var deleteBtn = new DeleteButton(click -> {
                 authorService.deleteAuthor(at.getId());
@@ -73,13 +85,8 @@ public class AuthorGrid extends Grid<Author> {
             connectionsBtn.setIcon(new Icon(VaadinIcon.CONNECT));
             connectionsBtn.setTooltipText("View connected authors");
 
-            var editBtn = new EditButton(click -> {
-                var authorToEdit = authorService.getAuthorById(at.getId());
-                authorAddUpdateForm.setAuthorToEdit(authorToEdit);
-            }, "Edit author");
-
             var actionsLayout = new HorizontalLayout();
-            actionsLayout.add(connectionsBtn, editBtn, deleteBtn);
+            actionsLayout.add(connectionsBtn, deleteBtn);
             actionsLayout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
             actionsLayout.setSpacing(false);
             actionsLayout.setPadding(false);
