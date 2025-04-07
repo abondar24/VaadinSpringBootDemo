@@ -4,7 +4,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -13,6 +12,7 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import lombok.extern.slf4j.Slf4j;
 import org.abondar.experimental.articlemanager.model.Article;
 import org.abondar.experimental.articlemanager.model.Author;
+import org.abondar.experimental.articlemanager.ui.common.DownloadLink;
 
 import java.util.List;
 
@@ -51,15 +51,8 @@ public class AuthorArticlesDialog extends Dialog {
                     articleLayout.setSpacing(false);
                     articleLayout.setMargin(false);
 
-
-                    String fileKey = article.getArticleKey();
-                    String fileUrl = awsEndpoint + "/" + articleBucket + "/" + fileKey;
-
-                    var fileLink = new Anchor(fileUrl, article.getTitle());
-                    fileLink.setTarget("_blank");
-
                     articleLayout.getElement().appendChild(
-                            fileLink.getElement()
+                            new DownloadLink(article, awsEndpoint, articleBucket).getElement()
                     );
 
                     var coAuthorLayout = new VerticalLayout();

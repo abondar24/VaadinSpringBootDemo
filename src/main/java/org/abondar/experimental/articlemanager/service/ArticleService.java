@@ -11,7 +11,6 @@ import org.abondar.experimental.articlemanager.model.ArticleFile;
 import org.abondar.experimental.articlemanager.repository.ArticleRepository;
 import org.abondar.experimental.articlemanager.repository.AuthorRepository;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -47,7 +46,6 @@ public class ArticleService {
         return articleRepository.findArticleByAuthor_Id(authorId);
     }
 
-    //TODO: add to ui
     public Article updateArticle(Article article, ArticleFile articleFile, List<String> coAuthorsIds) throws Exception {
         getArticleById(article.getId());
 
@@ -75,7 +73,7 @@ public class ArticleService {
     }
 
     public long countArticles() {
-        return authorRepository.count();
+        return articleRepository.count();
     }
 
     public Article getArticleById(String articleId) {
