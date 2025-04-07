@@ -12,6 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = {"connections","articles"})
+@ToString(exclude = {"connections", "articles"})
 public class Author {
     @Id
     private String id;
