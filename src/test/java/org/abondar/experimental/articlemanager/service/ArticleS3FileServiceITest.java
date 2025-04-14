@@ -10,6 +10,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -29,6 +30,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ArticleS3FileServiceITest {
 
     @Container
+    private static final GenericContainer<?> neo4j = new Neo4jContainer<>("neo4j:latest")
+            .withExposedPorts(7687)
+            .withEnv("NEO4J_AUTH", "none");
+
+    @Container
     private static final GenericContainer<?> localStack = new LocalStackContainer(DockerImageName.parse("localstack/localstack"))
             .withServices(LocalStackContainer.Service.S3)
             .withExposedPorts(4566);
@@ -42,6 +48,7 @@ public class ArticleS3FileServiceITest {
 
     @DynamicPropertySource
     static void configureTestProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.neo4j.uri", () -> "bolt://localhost:" + neo4j.getMappedPort(7687));
         registry.add("aws.localstack.endpoint", () -> "http://" + localStack.getHost() + ":" + localStack.getFirstMappedPort());
     }
 

@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,9 +73,9 @@ public class ArticleServiceTest {
 
         when(authorRepository.findById(any(String.class))).thenReturn(Optional.of(mainAuthor));
         when(authorRepository.findByIds(List.of(coAuthor.getId()))).thenReturn(coAuthors);
-        doThrow(IOException.class).when(s3FileService).uploadFile(any(String.class), any(ArticleFile.class));
+        doThrow(S3Exception.class).when(s3FileService).uploadFile(any(String.class), any(ArticleFile.class));
 
-        assertThrows(IOException.class, () -> articleService.saveAndUploadArticle(article.getTitle(), mainAuthor.getId(),
+        assertThrows(S3Exception.class, () -> articleService.saveAndUploadArticle(article.getTitle(), mainAuthor.getId(),
                 new ArticleFile(file.getInputStream(), file.getSize(), "test", file.getOriginalFilename()),
                 List.of(coAuthor.getId())));
         verify(s3FileService, times(1)).uploadFile(any(String.class), any(ArticleFile.class));
