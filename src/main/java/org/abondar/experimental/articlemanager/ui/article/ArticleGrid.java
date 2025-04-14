@@ -1,6 +1,8 @@
 package org.abondar.experimental.articlemanager.ui.article;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -28,10 +30,7 @@ public class ArticleGrid extends Grid<Article> {
     private static final String TITLE_COLUMN = "title";
     private static final String AUTHOR_COLUMN = "author";
     private final ArticleService articleService;
-    @Value("${aws.localstack.endpoint}")
-    private String awsEndpoint;
-    @Value("${aws.s3-bucket}")
-    private String articleBucket;
+
 
 
     public ArticleGrid(ArticleService articleService, AddUpdateArticleForm addUpdateArticleForm) {
@@ -59,7 +58,7 @@ public class ArticleGrid extends Grid<Article> {
                 .ifPresent(addUpdateArticleForm::editArticle));
 
         addComponentColumn(article -> {
-            var link = new DownloadLink(article, awsEndpoint, articleBucket);
+            var link = new DownloadLink(article,articleService);
 
             var deleteBtn = new DeleteButton(click -> {
                 articleService.deleteArticle(article.getId());
@@ -68,9 +67,14 @@ public class ArticleGrid extends Grid<Article> {
                 refresh();
             });
 
+            var viewAuthorArticlesBtn = new Button(VaadinIcon.LIST_UL.create(), click ->
+                   new AuthorArticlesDialog(article.getAuthor(),articleService).open()
+            );
+            viewAuthorArticlesBtn.setText("View author articles");
+
 
             var actionsLayout = new HorizontalLayout();
-            actionsLayout.add(link, deleteBtn);
+            actionsLayout.add(link, deleteBtn, viewAuthorArticlesBtn);
             actionsLayout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
             return actionsLayout;
         });

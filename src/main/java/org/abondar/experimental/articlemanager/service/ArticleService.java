@@ -6,13 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.abondar.experimental.articlemanager.exception.ArticleNotFoundException;
 import org.abondar.experimental.articlemanager.exception.AuthorNotFoundException;
 import org.abondar.experimental.articlemanager.model.Article;
-import org.abondar.experimental.articlemanager.model.Author;
 import org.abondar.experimental.articlemanager.model.ArticleFile;
+import org.abondar.experimental.articlemanager.model.Author;
 import org.abondar.experimental.articlemanager.repository.ArticleRepository;
 import org.abondar.experimental.articlemanager.repository.AuthorRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +32,7 @@ public class ArticleService {
 
     public Article saveAndUploadArticle(String title, String authorId, ArticleFile articleFile, List<String> coAuthorsIds) throws Exception {
         var id = UUID.randomUUID().toString();
-        var articleKey = authorId + "/" + id;
+        var articleKey = authorId + "/" + id + "/" + articleFile.filename();
 
         var author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new AuthorNotFoundException("Author not found"));
@@ -61,8 +62,8 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    public List<Article> getArticles(int offset, int limit){
-          return articleRepository.findAll(PageRequest.of(offset,limit)).getContent();
+    public List<Article> getArticles(int offset, int limit) {
+        return articleRepository.findAll(PageRequest.of(offset, limit)).getContent();
     }
 
     public void deleteArticle(String articleId) {
@@ -79,6 +80,10 @@ public class ArticleService {
     public Article getArticleById(String articleId) {
         return articleRepository.findById(articleId)
                 .orElseThrow(() -> new ArticleNotFoundException("Article not found"));
+    }
+
+    public InputStream getArticleFile(String articleKey) {
+        return s3FileService.downloadFile(articleKey);
     }
 
 

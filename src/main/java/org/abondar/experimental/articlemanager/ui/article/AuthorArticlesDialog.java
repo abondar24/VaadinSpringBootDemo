@@ -12,21 +12,20 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import lombok.extern.slf4j.Slf4j;
 import org.abondar.experimental.articlemanager.model.Article;
 import org.abondar.experimental.articlemanager.model.Author;
+import org.abondar.experimental.articlemanager.service.ArticleService;
 import org.abondar.experimental.articlemanager.ui.common.DownloadLink;
 
-import java.util.List;
 
 
 @Slf4j
 public class AuthorArticlesDialog extends Dialog {
 
-    private final String awsEndpoint;
+    private final ArticleService articleService;
 
-    private final String articleBucket;
+    public AuthorArticlesDialog(Author author, ArticleService articleService) {
+        this.articleService = articleService;
 
-    public AuthorArticlesDialog(List<Article> articles, Author author, String awsEndpoint, String articleBucket) {
-        this.awsEndpoint = awsEndpoint;
-        this.articleBucket = articleBucket;
+        var articles = articleService.getArticlesByAuthor(author.getId());
 
         setHeaderTitle("Articles of: " + author.getFullName());
 
@@ -52,7 +51,7 @@ public class AuthorArticlesDialog extends Dialog {
                     articleLayout.setMargin(false);
 
                     articleLayout.getElement().appendChild(
-                            new DownloadLink(article, awsEndpoint, articleBucket).getElement()
+                            new DownloadLink(article,articleService).getElement()
                     );
 
                     var coAuthorLayout = new VerticalLayout();
