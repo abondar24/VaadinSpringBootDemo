@@ -27,7 +27,7 @@ public class ArticleService {
 
     private final AuthorRepository authorRepository;
 
-    private final FileUploadService fileUploadService;
+    private final S3FileService s3FileService;
 
     public Article saveAndUploadArticle(String title, String authorId, ArticleFile articleFile, List<String> coAuthorsIds) throws Exception {
         var id = UUID.randomUUID().toString();
@@ -38,7 +38,7 @@ public class ArticleService {
 
         var article = new Article(id, title, articleKey, author, getCoAuthors(coAuthorsIds));
 
-        fileUploadService.uploadFile(articleKey, articleFile);
+        s3FileService.uploadFile(articleKey, articleFile);
         return articleRepository.save(article);
     }
 
@@ -50,7 +50,7 @@ public class ArticleService {
         getArticleById(article.getId());
 
         if (articleFile != null) {
-            fileUploadService.uploadFile(article.getArticleKey(), articleFile);
+            s3FileService.uploadFile(article.getArticleKey(), articleFile);
         }
 
         var coAuthors = getCoAuthors(coAuthorsIds);
@@ -68,7 +68,7 @@ public class ArticleService {
     public void deleteArticle(String articleId) {
         var article = getArticleById(articleId);
 
-        fileUploadService.deleteFile(article.getArticleKey());
+        s3FileService.deleteFile(article.getArticleKey());
         articleRepository.delete(article);
     }
 

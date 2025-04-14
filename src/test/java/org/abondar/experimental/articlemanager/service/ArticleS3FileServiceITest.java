@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 @SpringBootTest
 @Tag("integration")
-public class ArticleFileUploadServiceITest {
+public class ArticleS3FileServiceITest {
 
     @Container
     private static final GenericContainer<?> localStack = new LocalStackContainer(DockerImageName.parse("localstack/localstack"))
@@ -34,7 +34,7 @@ public class ArticleFileUploadServiceITest {
             .withExposedPorts(4566);
 
     @Autowired
-    private FileUploadService fileUploadService;
+    private S3FileService s3FileService;
 
     @Autowired
     private S3Client s3Client;
@@ -57,7 +57,8 @@ public class ArticleFileUploadServiceITest {
         var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
         var key = "test-key";
 
-        fileUploadService.uploadFile(key, new ArticleFile(file.getInputStream(),file.getSize()));
+        s3FileService.uploadFile(key, new ArticleFile(file.getInputStream(), file.getSize(),
+                "test", file.getOriginalFilename()));
 
         var s3Object = s3Client.getObject(GetObjectRequest.builder()
                 .bucket("articles")
@@ -69,13 +70,31 @@ public class ArticleFileUploadServiceITest {
     }
 
     @Test
+    void downloadFileTest() throws IOException {
+        var fileContent = "test";
+        var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", fileContent.getBytes());
+        var key = "test-key";
+
+        s3FileService.uploadFile(key, new ArticleFile(file.getInputStream(), file.getSize(),
+                "test", file.getOriginalFilename()));
+
+        var fileStream = s3FileService.downloadFile(key);
+
+        assertNotNull(fileStream);
+
+        var downloadedContent = new String(fileStream.readAllBytes());
+        assertEquals(fileContent, downloadedContent);
+    }
+
+    @Test
     void deleteFileTest() throws IOException {
         var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
         var key = "test-key";
 
-        fileUploadService.uploadFile(key,new ArticleFile(file.getInputStream(),file.getSize()));
+        s3FileService.uploadFile(key, new ArticleFile(file.getInputStream(), file.getSize(),
+                "test", file.getOriginalFilename()));
 
-        fileUploadService.deleteFile(key);
+        s3FileService.deleteFile(key);
 
         assertThrows(NoSuchKeyException.class, () -> s3Client.getObject(GetObjectRequest.builder()
                 .bucket("articles")

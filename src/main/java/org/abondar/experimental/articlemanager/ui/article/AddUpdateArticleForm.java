@@ -203,7 +203,9 @@ public class AddUpdateArticleForm extends FormLayout {
         upload.addSucceededListener(event -> {
             log.info("File upload succeeded: {}", event.getFileName());
             var inputStream = buffer.getInputStream();
-            uploadedFile = new ArticleFile(inputStream, event.getContentLength());
+            var mimeType = event.getMIMEType();
+            var originalFilename = event.getFileName();
+            uploadedFile = new ArticleFile(inputStream, event.getContentLength(), mimeType, originalFilename);
         });
 
         return upload;

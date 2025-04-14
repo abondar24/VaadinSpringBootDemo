@@ -66,7 +66,7 @@ public class ArticleServiceITest {
         var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
 
         var article = articleService.saveAndUploadArticle(title, author.getId(),
-                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
+                new ArticleFile(file.getInputStream(),file.getSize(),"test",file.getOriginalFilename()), List.of());
         assertNotNull(article.getId());
     }
 
@@ -78,7 +78,7 @@ public class ArticleServiceITest {
         var coAuthor =  authorService.save("James", "Din", "james.din@test.com");
 
         var article = articleService.saveAndUploadArticle(title, author.getId(),
-                new ArticleFile(file.getInputStream(),file.getSize()), List.of(coAuthor.getId()));
+                new ArticleFile(file.getInputStream(),file.getSize(),"test",file.getOriginalFilename()), List.of());
 
         var res = articleService.getArticlesByAuthor(author.getId());
         assertFalse(res.isEmpty());
@@ -92,7 +92,7 @@ public class ArticleServiceITest {
         var title = "test Title";
         var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
         var article = articleService.saveAndUploadArticle(title, author.getId(),
-                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
+                new ArticleFile(file.getInputStream(),file.getSize(),"test",file.getOriginalFilename()), List.of());
 
         var coAuthor = authorService.save("John", "Test", "john.test@test.com");
         var res = articleService.updateArticle(article, null, List.of(coAuthor.getId()));
@@ -106,7 +106,7 @@ public class ArticleServiceITest {
         var title = "test Title";
         var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
         var article = articleService.saveAndUploadArticle(title, author.getId(),
-                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
+                new ArticleFile(file.getInputStream(),file.getSize(),"test",file.getOriginalFilename()), List.of());
 
         articleService.deleteArticle(article.getId());
 
@@ -119,7 +119,7 @@ public class ArticleServiceITest {
         var title = "test Title";
         var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
         var article = articleService.saveAndUploadArticle(title, author.getId(),
-                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
+                new ArticleFile(file.getInputStream(),file.getSize(),"test",file.getOriginalFilename()), List.of());
 
         var res = articleService.getArticles(0,1);
         assertFalse(res.isEmpty());
@@ -132,7 +132,7 @@ public class ArticleServiceITest {
         var title = "test Title";
         var file = new MockMultipartFile("file", "test.txt", "multipart/form-data", "test".getBytes());
         articleService.saveAndUploadArticle(title, author.getId(),
-                new ArticleFile(file.getInputStream(),file.getSize()), List.of());
+                new ArticleFile(file.getInputStream(),file.getSize(),"test",file.getOriginalFilename()), List.of());
 
         var res = articleService.countArticles();
         assertEquals(1,res);

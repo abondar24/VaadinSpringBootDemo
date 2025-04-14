@@ -1,7 +1,9 @@
 package org.abondar.experimental.articlemanager.service;
 
 import org.abondar.experimental.articlemanager.exception.ArticleNotFoundException;
-import org.abondar.experimental.articlemanager.model.*;
+import org.abondar.experimental.articlemanager.model.Article;
+import org.abondar.experimental.articlemanager.model.ArticleFile;
+import org.abondar.experimental.articlemanager.model.Author;
 import org.abondar.experimental.articlemanager.repository.ArticleRepository;
 import org.abondar.experimental.articlemanager.repository.AuthorRepository;
 import org.junit.jupiter.api.Test;
@@ -9,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class ArticleServiceTest {
     private ArticleRepository articleRepository;
 
     @Mock
-    private FileUploadService fileUploadService;
+    private S3FileService s3FileService;
 
     @InjectMocks
     private ArticleService articleService;
@@ -51,9 +52,10 @@ public class ArticleServiceTest {
         when(articleRepository.save(any(Article.class))).thenReturn(article);
 
         var res = articleService.saveAndUploadArticle(article.getTitle(), mainAuthor.getId(),
-                new ArticleFile(file.getInputStream(),file.getSize()), List.of(coAuthor.getId()));
+                new ArticleFile(file.getInputStream(), file.getSize(), "test", file.getOriginalFilename()),
+                List.of(coAuthor.getId()));
 
-        verify(fileUploadService, times(1)).uploadFile(any(String.class), any(ArticleFile.class));
+        verify(s3FileService, times(1)).uploadFile(any(String.class), any(ArticleFile.class));
         assertNotNull(res);
         assertEquals(article.getTitle(), res.getTitle());
 
@@ -70,11 +72,12 @@ public class ArticleServiceTest {
 
         when(authorRepository.findById(any(String.class))).thenReturn(Optional.of(mainAuthor));
         when(authorRepository.findByIds(List.of(coAuthor.getId()))).thenReturn(coAuthors);
-        doThrow(IOException.class).when(fileUploadService).uploadFile(any(String.class), any(ArticleFile.class));
+        doThrow(IOException.class).when(s3FileService).uploadFile(any(String.class), any(ArticleFile.class));
 
         assertThrows(IOException.class, () -> articleService.saveAndUploadArticle(article.getTitle(), mainAuthor.getId(),
-                new ArticleFile(file.getInputStream(),file.getSize()), List.of(coAuthor.getId())));
-        verify(fileUploadService, times(1)).uploadFile(any(String.class), any(ArticleFile.class));
+                new ArticleFile(file.getInputStream(), file.getSize(), "test", file.getOriginalFilename()),
+                List.of(coAuthor.getId())));
+        verify(s3FileService, times(1)).uploadFile(any(String.class), any(ArticleFile.class));
 
 
     }
@@ -134,7 +137,7 @@ public class ArticleServiceTest {
 
         articleService.deleteArticle(article.getId());
 
-        verify(fileUploadService, times(1)).deleteFile(any(String.class));
+        verify(s3FileService, times(1)).deleteFile(any(String.class));
         verify(articleRepository, times(1)).delete(any(Article.class));
     }
 }

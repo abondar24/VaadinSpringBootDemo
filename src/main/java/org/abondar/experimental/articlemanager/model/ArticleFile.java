@@ -4,6 +4,8 @@ import java.io.InputStream;
 
 public record ArticleFile(
         InputStream file,
-        long length
+        long length,
+        String contentType,
+        String filename
 ) {
 }
