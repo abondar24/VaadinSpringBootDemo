@@ -46,8 +46,39 @@ test {
 }
 
 
-def integrationTest = tasks.register("integrationTest",Test){
+tasks.register("integrationTest",Test){
     useJUnitPlatform{
         includeTags "integration"
     }
 }
+
+tasks.register('composeUp', Exec) {
+    commandLine "docker-compose", "up", "-d"
+}
+
+tasks.register("composeDown", Exec) {
+    commandLine "docker-compose", "down"
+}
+
+
+def createS3Bucket = {
+    exec {
+        commandLine "aws", "--endpoint-url=http://localhost:4566", "s3api", "create-bucket", "--bucket", "articles", "--region", "us-east-1"
+        environment "AWS_ACCESS_KEY_ID", "test"
+        environment "AWS_SECRET_ACCESS_KEY", "test"
+    }
+}
+
+tasks.register("createS3Bucket") {
+    dependsOn "composeUp"
+    doLast {
+        sleep(5000)
+        createS3Bucket()
+    }
+}
+
+bootRun {
+    dependsOn "composeUp"
+}
+
+bootRun.finalizedBy("composeDown")
