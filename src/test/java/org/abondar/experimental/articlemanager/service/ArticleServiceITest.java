@@ -1,74 +1,25 @@
 package org.abondar.experimental.articlemanager.service;
 
-import org.abondar.experimental.articlemanager.model.Article;
 import org.abondar.experimental.articlemanager.model.ArticleFile;
 import org.abondar.experimental.articlemanager.model.Author;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.containers.localstack.LocalStackContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Testcontainers
-@SpringBootTest
-@Tag("integration")
-public class ArticleServiceITest {
 
-    @Container
-    private static final GenericContainer<?> neo4j = new Neo4jContainer<>("neo4j:latest")
-            .withExposedPorts(7687)
-            .withEnv("NEO4J_AUTH", "none");
+public class ArticleServiceITest extends BaseIntegrationTest {
 
-    @Container
-    private static final GenericContainer<?> localStack = new LocalStackContainer(DockerImageName.parse("localstack/localstack"))
-            .withServices(LocalStackContainer.Service.S3)
-            .withExposedPorts(4566);
-
-    @Autowired
-    private ArticleService articleService;
-
-    @Autowired
-    private AuthorService authorService;
-
-    @Autowired
-    private S3Client s3Client;
-
-    @Autowired
-    private Neo4jTemplate neo4jTemplate;
 
     private Author author;
 
-    @DynamicPropertySource
-    static void configureTestProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.neo4j.uri", () -> "bolt://localhost:" + neo4j.getMappedPort(7687));
-        registry.add("aws.localstack.endpoint", () -> "http://" + localStack.getHost() + ":" + localStack.getFirstMappedPort());
-    }
 
     @BeforeEach
-    void createBucket() {
+    void createAuthor() {
         author = authorService.save("John", "Doe", "john.doe@test.com");
-
-        s3Client.createBucket(CreateBucketRequest.builder()
-                .bucket("articles")
-                .build());
-
-        neo4jTemplate.deleteAll(Article.class);
     }
 
 

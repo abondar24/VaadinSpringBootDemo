@@ -20,7 +20,7 @@ java -jar build/libs/artileManager-1.0-SNAPSHOT.jar
 ```
 gradle clean build
 
-gradlewbootRun
+gradlew bootRun
 ```
 ### Manually start/stop infrastructre
 ```

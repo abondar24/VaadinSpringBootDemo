@@ -24,40 +24,10 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Testcontainers
-@SpringBootTest
-@Tag("integration")
-public class ArticleS3FileServiceITest {
-
-    @Container
-    private static final GenericContainer<?> neo4j = new Neo4jContainer<>("neo4j:latest")
-            .withExposedPorts(7687)
-            .withEnv("NEO4J_AUTH", "none");
-
-    @Container
-    private static final GenericContainer<?> localStack = new LocalStackContainer(DockerImageName.parse("localstack/localstack"))
-            .withServices(LocalStackContainer.Service.S3)
-            .withExposedPorts(4566);
+public class ArticleS3FileServiceITest extends BaseIntegrationTest {
 
     @Autowired
     private S3FileService s3FileService;
-
-    @Autowired
-    private S3Client s3Client;
-
-
-    @DynamicPropertySource
-    static void configureTestProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.neo4j.uri", () -> "bolt://localhost:" + neo4j.getMappedPort(7687));
-        registry.add("aws.localstack.endpoint", () -> "http://" + localStack.getHost() + ":" + localStack.getFirstMappedPort());
-    }
-
-    @BeforeEach
-    void createBucket() {
-        s3Client.createBucket(CreateBucketRequest.builder()
-                .bucket("articles")
-                .build());
-    }
 
     @Test
     void uploadFileTest() throws IOException {

@@ -18,33 +18,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Testcontainers
-@SpringBootTest
-@Tag("integration")
-public class AuthorServiceITest {
+public class AuthorServiceITest extends BaseIntegrationTest {
 
-
-    @Container
-    private static final GenericContainer<?> neo4j = new Neo4jContainer<>("neo4j:latest")
-            .withExposedPorts(7687)
-            .withEnv("NEO4J_AUTH", "none");
-
-    @Autowired
-    private AuthorService authorService;
-
-    @Autowired
-    private Neo4jTemplate neo4jTemplate;
-
-    @DynamicPropertySource
-    static void configureTestProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.neo4j.uri", () -> "bolt://" + neo4j.getHost() + ":" + neo4j.getFirstMappedPort());
-    }
-
-
-   @BeforeEach
-   void cleanDB(){
-        neo4jTemplate.deleteAll(Author.class);
-   }
 
     @Test
     void saveAuthorTest() {
